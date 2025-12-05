@@ -1,12 +1,10 @@
 # Online Course Platform
 Nhóm 8
-Danh sách thành viên
-Phạm Hồng Thái
-Trần Minh Giang
-Trần Quang Thịnh
-Phạm Trọng Sang
-
-No leader,  no war
+Danh sách thành viên :
++ Phạm Hồng Thái
++ Trần Minh Giang
++ Trần Quang Thịnh
++ Phạm Trọng Sang
 
 This is an online course management system built with PHP.
 
