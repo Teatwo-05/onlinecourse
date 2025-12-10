@@ -65,3 +65,4 @@ class User {
 		return $stmt->execute($params);
 	}
 }
+
