@@ -1,70 +1,92 @@
 <?php
-require_once 'config/Database.php';
-require_once 'models/User.php';
+require_once __DIR__ . '/../models/User.php';
 
 class AuthController {
-    private $db;
-    private $userModel;
 
-    public function __construct() {
-        $database = new Database();
-        $this->db = $database->connect();
-        $this->userModel = new User($this->db);
-    }
+	public function register()
+	{
+		if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+			$name = trim($_POST['name'] ?? '');
+			$email = trim($_POST['email'] ?? '');
+			$password = $_POST['password'] ?? '';
+			$password_confirm = $_POST['password_confirm'] ?? '';
 
-    // --- ĐĂNG KÝ ---
-    public function register() {
-        // Nếu là POST request (Người dùng nhấn nút Submit)
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            // Lấy dữ liệu từ form
-            $this->userModel->username = $_POST['username'];
-            $this->userModel->email = $_POST['email'];
-            $this->userModel->password = $_POST['password'];
-            $this->userModel->fullname = $_POST['fullname'];
-            $this->userModel->role = 0; // Mặc định là học viên
+			// Basic validation
+			if ($name === '' || $email === '' || $password === '') {
+				$_SESSION['error'] = 'Vui lòng điền đầy đủ thông tin.';
+				header('Location: index.php?url=auth/register');
+				exit;
+			}
 
-            if ($this->userModel->create()) {
-                // Đăng ký thành công -> Chuyển hướng về trang đăng nhập
-                header('Location: index.php?controller=auth&action=login');
-            } else {
-                $error = "Đăng ký thất bại. Có thể email đã tồn tại.";
-                require 'views/auth/register.php';
-            }
-        } else {
-            // Nếu là GET -> Hiển thị form đăng ký
-            require 'views/auth/register.php';
-        }
-    }
+			if ($password !== $password_confirm) {
+				$_SESSION['error'] = 'Mật khẩu xác nhận không khớp.';
+				header('Location: index.php?url=auth/register');
+				exit;
+			}
 
-    // --- ĐĂNG NHẬP ---
-    public function login() {
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $email = $_POST['email'];
-            $password = $_POST['password'];
+			if (User::findByEmail($email)) {
+				$_SESSION['error'] = 'Email đã được sử dụng.';
+				header('Location: index.php?url=auth/register');
+				exit;
+			}
 
-            $user = $this->userModel->login($email, $password);
+			$userId = User::create([
+				'name' => $name,
+				'email' => $email,
+				'password' => $password,
+				'role' => 'student'
+			]);
 
-            if ($user) {
-                // Lưu thông tin vào Session
-                $_SESSION['user_id'] = $user['id'];
-                $_SESSION['user_name'] = $user['fullname'];
-                $_SESSION['user_role'] = $user['role'];
+			$_SESSION['user_id'] = $userId;
+			header('Location: index.php');
+			exit;
+		}
 
-                header('Location: index.php'); // Về trang chủ
-            } else {
-                $error = "Email hoặc mật khẩu không đúng!";
-                require 'views/auth/login.php';
-            }
-        } else {
-            require 'views/auth/login.php';
-        }
-    }
+		include __DIR__ . '/../views/auth/register.php';
+	}
 
-    // --- ĐĂNG XUẤT ---
-    public function logout() {
-        session_unset();
-        session_destroy();
-        header('Location: index.php');
-    }
+	public function login()
+	{
+		if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+			$email = trim($_POST['email'] ?? '');
+			$password = $_POST['password'] ?? '';
+
+			if ($email === '' || $password === '') {
+				$_SESSION['error'] = 'Vui lòng nhập email và mật khẩu.';
+				header('Location: index.php?url=auth/login');
+				exit;
+			}
+
+			$user = User::verifyCredentials($email, $password);
+			if ($user) {
+				$_SESSION['user_id'] = $user['id'];
+				header('Location: index.php');
+				exit;
+			}
+
+			$_SESSION['error'] = 'Email hoặc mật khẩu không đúng.';
+			header('Location: index.php?url=auth/login');
+			exit;
+		}
+
+		include __DIR__ . '/../views/auth/login.php';
+	}
+
+	public function logout()
+	{
+		// Clear session
+		$_SESSION = [];
+		if (ini_get('session.use_cookies')) {
+			$params = session_get_cookie_params();
+			setcookie(session_name(), '', time() - 42000,
+				$params['path'], $params['domain'],
+				$params['secure'], $params['httponly']
+			);
+		}
+		session_destroy();
+		header('Location: index.php');
+		exit;
+	}
+
 }
 ?>

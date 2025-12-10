@@ -1,51 +1,68 @@
 <?php
+require_once __DIR__ . '/../config/Database.php';
+
 class User {
-    private $db;
 
-    // Các thuộc tính ánh xạ với cột trong Database
-    public $id;
-    public $username;
-    public $email;
-    public $password;
-    public $fullname;
-    public $role; // 0: Student, 1: Instructor, 2: Admin
+	public static function findByEmail($email)
+	{
+		$db = (new Database())->connect();
+		$stmt = $db->prepare('SELECT * FROM users WHERE email = :email LIMIT 1');
+		$stmt->execute(['email' => $email]);
+		return $stmt->fetch() ?: false;
+	}
 
-    public function __construct($dbConnection) {
-        $this->db = $dbConnection;
-    }
+	public static function findById($id)
+	{
+		$db = (new Database())->connect();
+		$stmt = $db->prepare('SELECT * FROM users WHERE id = :id LIMIT 1');
+		$stmt->execute(['id' => $id]);
+		return $stmt->fetch() ?: false;
+	}
 
-    // Hàm tạo user mới (Đăng ký)
-    public function create() {
-        $query = "INSERT INTO users (username, email, password, fullname, role) 
-                  VALUES (:username, :email, :password, :fullname, :role)";
-        
-        $stmt = $this->db->prepare($query);
+	public static function create($data)
+	{
+		$db = (new Database())->connect();
+		$stmt = $db->prepare('INSERT INTO users (name, email, password, role, created_at) VALUES (:name, :email, :password, :role, :created_at)');
+		$now = date('Y-m-d H:i:s');
+		$stmt->execute([
+			'name' => $data['name'],
+			'email' => $data['email'],
+			'password' => password_hash($data['password'], PASSWORD_DEFAULT),
+			'role' => isset($data['role']) ? $data['role'] : 'student',
+			'created_at' => $now,
+		]);
 
-        // Làm sạch dữ liệu và bind params
-        $this->password = password_hash($this->password, PASSWORD_DEFAULT); // Mã hóa pass
-        
-        $stmt->bindParam(':username', $this->username);
-        $stmt->bindParam(':email', $this->email);
-        $stmt->bindParam(':password', $this->password);
-        $stmt->bindParam(':fullname', $this->fullname);
-        $stmt->bindParam(':role', $this->role);
+		return $db->lastInsertId();
+	}
 
-        return $stmt->execute();
-    }
+	public static function verifyCredentials($email, $password)
+	{
+		$user = self::findByEmail($email);
+		if (!$user) return false;
 
-    // Hàm tìm user để đăng nhập
-    public function login($email, $password) {
-        $query = "SELECT * FROM users WHERE email = :email LIMIT 1";
-        $stmt = $this->db->prepare($query);
-        $stmt->bindParam(':email', $email);
-        $stmt->execute();
-        
-        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+		if (isset($user['password']) && password_verify($password, $user['password'])) {
+			return $user;
+		}
 
-        if ($user && password_verify($password, $user['password'])) {
-            return $user;
-        }
-        return false;
-    }
+		return false;
+	}
+
+	public static function update($id, $data)
+	{
+		$db = (new Database())->connect();
+		$fields = [];
+		$params = ['id' => $id];
+
+		if (isset($data['name'])) { $fields[] = 'name = :name'; $params['name'] = $data['name']; }
+		if (isset($data['email'])) { $fields[] = 'email = :email'; $params['email'] = $data['email']; }
+		if (isset($data['password'])) { $fields[] = 'password = :password'; $params['password'] = password_hash($data['password'], PASSWORD_DEFAULT); }
+		if (isset($data['role'])) { $fields[] = 'role = :role'; $params['role'] = $data['role']; }
+
+		if (empty($fields)) return false;
+
+		$sql = 'UPDATE users SET ' . implode(', ', $fields) . ' WHERE id = :id';
+		$stmt = $db->prepare($sql);
+		return $stmt->execute($params);
+	}
 }
-?>
+

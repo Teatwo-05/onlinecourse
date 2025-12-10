@@ -1,24 +1,27 @@
 <?php
+// config/Database.php
 class Database {
     private $host = "localhost";
-    private $db_name = "online_course"; // Tên Database bạn đã tạo trong phpMyAdmin
-    private $username = "root";
-    private $password = "";
-
+    private $db = "onlinecourse";   // đổi tên DB nếu bạn dùng khác
+    private $user = "root";
+    private $pass = "";
     public $conn;
+
     public function connect() {
-        $this->conn = null;
-
+        if ($this->conn) return $this->conn;
         try {
-            $dsn = "mysql:host=" . $this->host . ";dbname=" . $this->db_name . ";charset=utf8";
-            $this->conn = new PDO($dsn, $this->username, $this->password);
-            $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            $this->conn->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-
-        } catch(PDOException $e) {
-            echo "Lỗi kết nối Database: " . $e->getMessage();
+            $dsn = "mysql:host={$this->host};dbname={$this->db};charset=utf8mb4";
+            $options = [
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                PDO::ATTR_EMULATE_PREPARES => false,
+            ];
+            $this->conn = new PDO($dsn, $this->user, $this->pass, $options);
+        } catch (PDOException $e) {
+            // Không hiển thị lỗi trực tiếp trên production
+            die("Database connection failed: " . $e->getMessage());
         }
         return $this->conn;
     }
 }
-?>
+
