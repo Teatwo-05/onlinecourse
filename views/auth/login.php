@@ -1,17 +1,20 @@
 <?php
 if (session_status() !== PHP_SESSION_ACTIVE) session_start();
-require_once __DIR__ . '/../../models/User.php';
 include __DIR__ . '/../layouts/header.php';
 ?>
 <div class="auth-wrapper">
 	<div class="auth-card">
 		<h2>Đăng nhập</h2>
 
-		<?php if (!empty($_SESSION['error'])): ?>
+		<?php if (!empty($_SESSION['success'])): ?>
+			<div class="msg success"><?php echo htmlspecialchars($_SESSION['success']); unset($_SESSION['success']); ?></div>
+		<?php endif; ?>
+        
+        <?php if (!empty($_SESSION['error'])): ?>
 			<div class="msg error"><?php echo htmlspecialchars($_SESSION['error']); unset($_SESSION['error']); ?></div>
 		<?php endif; ?>
 
-		<form method="post" action="index.php?url=auth/login" novalidate>
+		<form method="post" action="index.php?controller=auth&action=login" novalidate>
 			<div class="form-group">
 				<label for="email">Email</label>
 				<input id="email" class="form-control" type="email" name="email" required />
@@ -25,7 +28,7 @@ include __DIR__ . '/../layouts/header.php';
 			</div>
 
 			<div class="auth-footer">
-				<div class="small muted">Chưa có tài khoản? <a href="index.php?url=auth/register">Đăng ký</a></div>
+				<div class="small muted">Chưa có tài khoản? <a href="index.php?controller=auth&action=register">Đăng ký</a></div>
 				<button class="btn" type="submit">Đăng nhập</button>
 			</div>
 		</form>

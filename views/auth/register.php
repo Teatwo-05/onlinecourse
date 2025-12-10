@@ -11,7 +11,7 @@ include __DIR__ . '/../layouts/header.php';
 			<div class="msg error"><?php echo htmlspecialchars($_SESSION['error']); unset($_SESSION['error']); ?></div>
 		<?php endif; ?>
 
-		<form method="post" action="index.php?url=auth/register" data-confirm novalidate>
+		<form method="post" action="index.php?controller=auth&action=register" data-confirm novalidate>
 			<div class="form-group">
 				<label for="name">Họ và tên</label>
 				<input id="name" class="form-control" type="text" name="name" required />
@@ -34,7 +34,7 @@ include __DIR__ . '/../layouts/header.php';
 			</div>
 
 			<div class="auth-footer">
-				<div class="small muted">Đã có tài khoản? <a href="index.php?url=auth/login">Đăng nhập</a></div>
+				<div class="small muted">Đã có tài khoản? <a href="index.php?controller=auth&action=login">Đăng nhập</a></div>
 				<button class="btn" type="submit">Đăng ký</button>
 			</div>
 		</form>

@@ -17,8 +17,9 @@ class CourseController {
 
     // Hiển thị danh sách khóa học
     public function index() {
+        require_once __DIR__ . '/../views/layouts/header.php';
         $courses = $this->courseModel->getAll();
-        require 'views/courses/list.php';
+        require 'views/courses/index.php';
     }
 
     // Hiển thị chi tiết 1 khóa học (kèm bài học)
@@ -35,5 +36,17 @@ class CourseController {
             echo "Khóa học không tồn tại!";
         }
     }
+    public function search() {
+    $keyword = isset($_GET['keyword']) ? trim($_GET['keyword']) : '';
+
+    require_once __DIR__ . '/../models/Course.php';
+    $courses = Course::search($keyword);
+
+    require_once __DIR__ . '/../views/layouts/header.php';
+    require_once __DIR__ . '/../views/courses/search.php';
+    require_once __DIR__ . '/../views/layouts/footer.php';
+}
+
+
 }
 ?>

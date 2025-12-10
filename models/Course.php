@@ -17,7 +17,7 @@ class Course {
     // Lấy tất cả khóa học (Kèm tên giảng viên và tên danh mục)
     public function getAll() {
         // Sử dụng JOIN để lấy thông tin liên quan
-        $query = "SELECT c.*, u.fullname as instructor_name, cat.name as category_name 
+        $query = "SELECT c.*, u.username as instructor_name, cat.name as category_name 
                   FROM courses c
                   LEFT JOIN users u ON c.instructor_id = u.id
                   LEFT JOIN categories cat ON c.category_id = cat.id
@@ -47,5 +47,23 @@ class Course {
         // ...
         return $stmt->execute();
     }
+    //tìm kiếm khóa học theo từ khóa
+    public static function search($keyword) {
+    $db = (new Database())->connect();
+
+    $stmt = $db->prepare("
+        SELECT * FROM courses 
+        WHERE title LIKE ? OR description LIKE ?
+        ORDER BY created_at DESC
+    ");
+
+    $kw = '%' . $keyword . '%';
+    $stmt->execute([$kw, $kw]);
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+
+
 }
 ?>
