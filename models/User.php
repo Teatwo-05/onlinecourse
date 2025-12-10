@@ -22,13 +22,14 @@ class User {
 	public static function create($data)
 	{
 		$db = (new Database())->connect();
-		$stmt = $db->prepare('INSERT INTO users (name, email, password, role, created_at) VALUES (:name, :email, :password, :role, :created_at)');
+		$stmt = $db->prepare('INSERT INTO users (username, email, password, fullname, role, created_at) VALUES (:username, :email, :password,:fullname, :role, :created_at)');
 		$now = date('Y-m-d H:i:s');
 		$stmt->execute([
-			'name' => $data['name'],
+			'username' => $data['username'],
 			'email' => $data['email'],
 			'password' => password_hash($data['password'], PASSWORD_DEFAULT),
-			'role' => isset($data['role']) ? $data['role'] : 'student',
+			'fullname' => $data['fullname'] ?? $data['username'],
+			'role' => isset($data['role']) ? $data['role'] : 0,
 			'created_at' => $now,
 		]);
 
@@ -53,7 +54,7 @@ class User {
 		$fields = [];
 		$params = ['id' => $id];
 
-		if (isset($data['name'])) { $fields[] = 'name = :name'; $params['name'] = $data['name']; }
+		if (isset($data['username'])) { $fields[] = 'username = :username'; $params['username'] = $data['username']; }
 		if (isset($data['email'])) { $fields[] = 'email = :email'; $params['email'] = $data['email']; }
 		if (isset($data['password'])) { $fields[] = 'password = :password'; $params['password'] = password_hash($data['password'], PASSWORD_DEFAULT); }
 		if (isset($data['role'])) { $fields[] = 'role = :role'; $params['role'] = $data['role']; }

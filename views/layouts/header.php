@@ -28,7 +28,7 @@
         <?php if (isset($_SESSION['user_id'])): ?>
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                    Xin chào, <?php echo $_SESSION['user_name']; ?>
+                    Xin chào
                 </a>
                 <ul class="dropdown-menu">
                     <li><a class="dropdown-item" href="#">Khóa học của tôi</a></li>
@@ -37,8 +37,21 @@
                 </ul>
             </li>
         <?php else: ?>
-            <li class="nav-item"><a class="nav-link" href="index.php?controller=auth&action=login">Đăng nhập</a></li>
-            <li class="nav-item"><a class="nav-link" href="index.php?controller=auth&action=register">Đăng ký</a></li>
+			<form class="d-flex" action="index.php" method="GET">
+    <input type="hidden" name="controller" value="course">
+    <input type="hidden" name="action" value="search">
+
+    <input class="form-control me-2" 
+           type="search" 
+           name="keyword"
+           placeholder="Tìm khóa học..."
+           required>
+    <button class="btn btn-outline-light" type="submit">Tìm</button>
+</form>
+
+			<li class="nav-item"><a class="nav-link" href="index.php?controller=auth&action=login">Đăng nhập</a></li>
+			<li class="nav-item"><a class="nav-link" href="index.php?controller=auth&action=register">Đăng ký</a></li>
+			<li class="nav-item"><a class="nav-link" href="index.php?controller=auth&action=logout">Đăng xuất</a></li>
         <?php endif; ?>
       </ul>
     </div>
@@ -60,15 +73,6 @@ require_once __DIR__ . '/../../models/User.php';
 	<style>nav a{margin-right:10px;}</style>
 </head>
 <body>
-<nav>
-	<a href="index.php">Home</a>
-	<a href="index.php?url=courses">Courses</a>
-	<?php if (!empty($_SESSION['user_id'])): ?>
-		<a href="index.php?url=auth/logout">Logout</a>
-	<?php else: ?>
-		<a href="index.php?url=auth/login">Login</a>
-		<a href="index.php?url=auth/register">Register</a>
-	<?php endif; ?>
-</nav>
+
 
 <main>

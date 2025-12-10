@@ -1,35 +1,42 @@
 <?php
-session_start(); // Bắt buộc phải có để dùng Session cho đăng nhập
+session_start();
 
-// Lấy tham số từ URL. Ví dụ: index.php?controller=course&action=detail&id=1
-$controller = isset($_GET['controller']) ? $_GET['controller'] : 'home'; 
+$controller = isset($_GET['controller']) ? ucfirst($_GET['controller']) : 'Home';
 $action = isset($_GET['action']) ? $_GET['action'] : 'index';
-$id = isset($_GET['id']) ? $_GET['id'] : null;
+$id = isset($_GET['id']) ? $_GET['id'] : null; // Giữ tham số ID
 
-switch ($controller) {
-    case 'home':
-        require_once 'controllers/HomeController.php';
-        $homeCtrl = new HomeController();
-        $homeCtrl->index();
-        break;
+$controllerFile = "controllers/{$controller}Controller.php";
+$controllerClass = "{$controller}Controller";
 
-    case 'auth':
-        require_once 'controllers/AuthController.php';
-        $authCtrl = new AuthController();
-        if ($action == 'login') $authCtrl->login();
-        elseif ($action == 'register') $authCtrl->register();
-        elseif ($action == 'logout') $authCtrl->logout();
-        break;
-
-    case 'course':
-        require_once 'controllers/CourseController.php';
-        $courseCtrl = new CourseController();
-        if ($action == 'index') $courseCtrl->index();
-        elseif ($action == 'detail') $courseCtrl->detail($id);
-        break;
+if (file_exists($controllerFile)) {
+    require_once $controllerFile;
+    
+    // Kiểm tra class tồn tại
+    if (class_exists($controllerClass)) {
+        $object = new $controllerClass();
         
-    default:
-        echo "404 Not Found";
-        break;
+        // Kiểm tra method (action) tồn tại
+        if (method_exists($object, $action)) {
+            // Gọi action với tham số ID nếu có
+            if ($id !== null) {
+                $object->$action($id);
+            } else {
+                $object->$action();
+            }
+        } else {
+            // Xử lý Action không tồn tại
+            header("HTTP/1.0 404 Not Found");
+            echo "Action '{$action}' không tồn tại trong Controller '{$controller}'";
+        }
+    } else {
+        // Xử lý Controller file có nhưng class không tồn tại
+        header("HTTP/1.0 500 Internal Server Error");
+        echo "Lỗi nội bộ: Class '{$controllerClass}' không tồn tại.";
+    }
+
+} else {
+    // Xử lý Controller không tồn tại
+    header("HTTP/1.0 404 Not Found");
+    echo "Controller '{$controller}' không tồn tại";
 }
 ?>
