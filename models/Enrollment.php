@@ -1,54 +1,28 @@
 <?php
-
 class Enrollment {
-    private $id;
-    private $course_id;
-    private $student_id;
-    private $enrolled_date;
-    private $status;
-    private $progress;
-    public function __construct($id, $course_id, $student_id, $enrolled_date, $status, $progress) {
-        $this->id = $id;
-        $this->course_id = $course_id;
-        $this->student_id = $student_id;
-        $this->enrolled_date = $enrolled_date;
-        $this->status = $status;
-        $this->progress = $progress;
+    private $db;
+    public $course_id;
+    public $student_id;
+
+    public function __construct($db) { $this->db = $db; }
+
+    // Kiểm tra xem sinh viên đã mua khóa này chưa
+    public function isEnrolled($courseId, $studentId) {
+        $query = "SELECT id FROM enrollments WHERE course_id = :cid AND student_id = :sid";
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':cid', $courseId);
+        $stmt->bindParam(':sid', $studentId);
+        $stmt->execute();
+        return $stmt->rowCount() > 0;
     }
-    public function getId() {
-        return $this->id;
-    }
-    public function getCourseId() {
-        return $this->course_id;
-    }
-    public function getStudentId() {
-        return $this->student_id;
-    }
-    public function getEnrolledDate() {
-        return $this->enrolled_date;
-    }
-    public function getStatus() {
-        return $this->status;
-    }
-    public function getProgress() {
-        return $this->progress;
-    }
-    public function setId($id) {
-        $this->id = $id;
-    }
-    public function setCourseId($course_id) {
-        $this->course_id = $course_id;
-    }
-    public function setStudentId($student_id) {
-        $this->student_id = $student_id;
-    }
-    public function setEnrolledDate($enrolled_date) {
-        $this->enrolled_date = $enrolled_date;
-    }
-    public function setStatus($status) {
-        $this->status = $status;
-    }
-    public function setProgress($progress) {
-        $this->progress = $progress;
+
+    // Đăng ký học
+    public function enroll() {
+        $query = "INSERT INTO enrollments (course_id, student_id, status, progress) VALUES (:cid, :sid, 'active', 0)";
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':cid', $this->course_id);
+        $stmt->bindParam(':sid', $this->student_id);
+        return $stmt->execute();
     }
 }
+?>

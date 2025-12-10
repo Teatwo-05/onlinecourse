@@ -1,94 +1,51 @@
 <?php
-
 class Course {
-    private $id;
-    private $title;
-    private $description;
-    private $instructor_id;
-    private $category_id;
-    private $price;
-    private $duration_weeks;
-    private $level;
-    private $image;
-    private $created_at;
-    private $updated_at;
-    public function __construct($id, $title, $description, $instructor_id, $category_id, $price, $duration_weeks, $level, $image, $created_at, $updated_at) {
-        $this->id = $id;
-        $this->title = $title;
-        $this->description = $description;
-        $this->instructor_id = $instructor_id;
-        $this->category_id = $category_id;
-        $this->price = $price;
-        $this->duration_weeks = $duration_weeks;
-        $this->level = $level;
-        $this->image = $image;
-        $this->created_at = $created_at;
-        $this->updated_at = $updated_at;
+    private $db;
+
+    public $id;
+    public $title;
+    public $description;
+    public $instructor_id;
+    public $category_id;
+    public $price;
+    public $image;
+
+    public function __construct($dbConnection) {
+        $this->db = $dbConnection;
     }
-    public function getId() {
-        return $this->id;
+
+    // Lấy tất cả khóa học (Kèm tên giảng viên và tên danh mục)
+    public function getAll() {
+        // Sử dụng JOIN để lấy thông tin liên quan
+        $query = "SELECT c.*, u.fullname as instructor_name, cat.name as category_name 
+                  FROM courses c
+                  LEFT JOIN users u ON c.instructor_id = u.id
+                  LEFT JOIN categories cat ON c.category_id = cat.id
+                  ORDER BY c.created_at DESC";
+        
+        $stmt = $this->db->prepare($query);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-    public function getTitle() {
-        return $this->title;
+
+    // Lấy chi tiết 1 khóa học
+    public function getById($id) {
+        $query = "SELECT * FROM courses WHERE id = :id LIMIT 1";
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':id', $id);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
-    public function getDescription() {
-        return $this->description;
-    }
-    public function getInstructorId() {
-        return $this->instructor_id;
-    }
-    public function getCategoryId() {
-        return $this->category_id;
-    }
-    public function getPrice() {
-        return $this->price;
-    }
-    public function getDurationWeeks() {
-        return $this->duration_weeks;
-    }
-    public function getLevel() {
-        return $this->level;
-    }
-    public function getImage() {
-        return $this->image;
-    }
-    public function getCreatedAt() {
-        return $this->created_at;
-    }
-    public function getUpdatedAt() {
-        return $this->updated_at;
-    }
-    public function setId($id) {
-        $this->id = $id;
-    }
-    public function setTitle($title) {
-        $this->title = $title;
-    }
-    public function setDescription($description) {
-        $this->description = $description;
-    }
-    public function setInstructorId($instructor_id) {
-        $this->instructor_id = $instructor_id;
-    }
-    public function setCategoryId($category_id) {
-        $this->category_id = $category_id;
-    }
-    public function setPrice($price) {
-        $this->price = $price;
-    }
-    public function setDurationWeeks($duration_weeks) {
-        $this->duration_weeks = $duration_weeks;
-    }
-    public function setLevel($level) {
-        $this->level = $level;
-    }
-    public function setImage($image) {
-        $this->image = $image;
-    }
-    public function setCreatedAt($created_at) {
-        $this->created_at = $created_at;
-    }
-    public function setUpdatedAt($updated_at) {
-        $this->updated_at = $updated_at;
+
+    // Tạo khóa học mới
+    public function create() {
+        $query = "INSERT INTO courses (title, description, instructor_id, category_id, price, image)
+                  VALUES (:title, :description, :instructor, :category, :price, :image)";
+        
+        $stmt = $this->db->prepare($query);
+        // Bind các tham số tương tự như User...
+        // ...
+        return $stmt->execute();
     }
 }
+?>

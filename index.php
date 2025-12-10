@@ -1,31 +1,35 @@
 <?php
-// Main entry point - simple router for authentication and home
-if (session_status() !== PHP_SESSION_ACTIVE) session_start();
+session_start(); // Bắt buộc phải có để dùng Session cho đăng nhập
 
-require_once __DIR__ . '/controllers/AuthController.php';
-require_once __DIR__ . '/controllers/HomeController.php';
+// Lấy tham số từ URL. Ví dụ: index.php?controller=course&action=detail&id=1
+$controller = isset($_GET['controller']) ? $_GET['controller'] : 'home'; 
+$action = isset($_GET['action']) ? $_GET['action'] : 'index';
+$id = isset($_GET['id']) ? $_GET['id'] : null;
 
-$url = $_GET['url'] ?? '';
-$segments = explode('/', trim($url, '/'));
+switch ($controller) {
+    case 'home':
+        require_once 'controllers/HomeController.php';
+        $homeCtrl = new HomeController();
+        $homeCtrl->index();
+        break;
 
-// Route: auth/*
-if (!empty($segments[0]) && $segments[0] === 'auth') {
-	$action = $segments[1] ?? 'login';
-	$auth = new AuthController();
-	if ($action === 'login') {
-		$auth->login();
-		exit;
-	}
-	if ($action === 'register') {
-		$auth->register();
-		exit;
-	}
-	if ($action === 'logout') {
-		$auth->logout();
-		exit;
-	}
+    case 'auth':
+        require_once 'controllers/AuthController.php';
+        $authCtrl = new AuthController();
+        if ($action == 'login') $authCtrl->login();
+        elseif ($action == 'register') $authCtrl->register();
+        elseif ($action == 'logout') $authCtrl->logout();
+        break;
+
+    case 'course':
+        require_once 'controllers/CourseController.php';
+        $courseCtrl = new CourseController();
+        if ($action == 'index') $courseCtrl->index();
+        elseif ($action == 'detail') $courseCtrl->detail($id);
+        break;
+        
+    default:
+        echo "404 Not Found";
+        break;
 }
-
-// Home route
-$home = new HomeController();
-$home->index();
+?>
