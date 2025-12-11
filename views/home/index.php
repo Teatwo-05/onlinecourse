@@ -25,44 +25,7 @@ if (!defined('BASE_URL')) {
     </section>
 
     <!-- Search Section -->
-    <section class="search-section mb-5">
-        <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-md-10">
-                    <form method="GET" action="index.php?c=course&a=index" class="card p-4 shadow">
-                        <h3 class="mb-3">Tìm kiếm khóa học</h3>
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <input type="text" 
-                                       name="keyword" 
-                                       class="form-control form-control-lg"
-                                       placeholder="Nhập từ khóa..."
-                                       value="<?= htmlspecialchars($keyword ?? '') ?>">
-                            </div>
-                            <div class="col-md-4">
-                                <select name="category" class="form-select form-select-lg">
-                                    <option value="">Tất cả danh mục</option>
-                                    <?php if (!empty($categories)): ?>
-                                        <?php foreach ($categories as $cat): ?>
-                                            <option value="<?= $cat['id'] ?>"
-                                                <?= (isset($selected_category) && $selected_category == $cat['id']) ? 'selected' : '' ?>>
-                                                <?= htmlspecialchars($cat['name']) ?>
-                                            </option>
-                                        <?php endforeach; ?>
-                                    <?php endif; ?>
-                                </select>
-                            </div>
-                            <div class="col-md-2">
-                                <button type="submit" class="btn btn-primary btn-lg w-100">
-                                    <i class="fas fa-search"></i> Tìm
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </section>
+    
 
     <!-- Featured Courses -->
     <section class="courses-section">

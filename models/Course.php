@@ -65,6 +65,14 @@ class Course
     /* ===============================
         LẤY CHI TIẾT KHÓA HỌC
     =================================*/
+    public function getById($id) {
+        $sql = "SELECT * FROM {$this->table} WHERE id = :id";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetch();
+    }
+
     public function getCourseById($id)
     {
         $sql = "SELECT c.*, 

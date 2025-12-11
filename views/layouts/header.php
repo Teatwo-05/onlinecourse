@@ -1,5 +1,8 @@
 <?php
 // Kiểm tra constants
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 if (!defined('BASE_URL')) {
     require_once __DIR__ . '/../../config/constants.php';
 }

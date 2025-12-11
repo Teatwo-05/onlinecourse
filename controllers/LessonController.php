@@ -1,4 +1,8 @@
 <?php
+// File: controllers/LessonController.php
+include_once __DIR__ . '/../models/Lesson.php';
+include_once __DIR__ . '/../models/Course.php';
+include_once __DIR__ . '/../models/Material.php';
 
 class LessonController
 {
@@ -11,7 +15,6 @@ class LessonController
             die("Thiếu ID bài học.");
         }
 
-        // Sửa: Lesson::findById() → Lesson::getLessonById()
         $lessonModel = new Lesson();
         $lesson = $lessonModel->getLessonById($lessonId);
         
@@ -34,10 +37,14 @@ class LessonController
             die('Thiếu course_id.');
         }
 
-        // Giả sử Course::getById() tồn tại
-        $course = Course::getById($courseId);
+        // SỬA: Dùng instance thay vì static
+        $courseModel = new Course(); // Tạo instance
+        $course = $courseModel->getById($courseId); // Gọi phương thức non-static
         
-        // Sửa: Lesson::getByCourse() → Lesson::getLessonsByCourse()
+        if (!$course) {
+            die("Khóa học không tồn tại.");
+        }
+        
         $lessonModel = new Lesson();
         $lessons = $lessonModel->getLessonsByCourse($courseId);
 
@@ -56,14 +63,13 @@ class LessonController
         $content = $_POST['content'];
         $order = $_POST['lesson_order'];
 
-        // Sửa: Lesson::create() → Lesson::createLesson()
         $lessonModel = new Lesson();
         $lessonModel->createLesson([
             'course_id' => $courseId,
             'title' => $title,
             'content' => $content,
             'lesson_order' => $order,
-            'video_url' => $_POST['video_url'] ?? '' // Thêm video_url
+            'video_url' => $_POST['video_url'] ?? ''
         ]);
 
         header("Location: index.php?controller=Lesson&action=manage&course_id=$courseId");
@@ -79,9 +85,12 @@ class LessonController
             die("Thiếu ID bài học.");
         }
 
-        // Sửa: Lesson::findById() → Lesson::getLessonById()
         $lessonModel = new Lesson();
         $lesson = $lessonModel->getLessonById($lessonId);
+
+        if (!$lesson) {
+            die("Bài học không tồn tại.");
+        }
 
         include 'views/instructor/lessons/edit.php';
     }
@@ -99,7 +108,6 @@ class LessonController
         $content = $_POST['content'];
         $order = $_POST['lesson_order'];
 
-        // Sửa: Lesson::update() → Lesson::updateLesson()
         $lessonModel = new Lesson();
         $lessonModel->updateLesson($lessonId, [
             'title' => $title,
@@ -122,7 +130,6 @@ class LessonController
             die("Thiếu tham số.");
         }
 
-        // Sửa: Lesson::delete() → Lesson::deleteLesson()
         $lessonModel = new Lesson();
         $lessonModel->deleteLesson($lessonId);
 
@@ -130,3 +137,4 @@ class LessonController
         exit;
     }
 }
+?>
