@@ -48,3 +48,4 @@ class Database {
     // Ngăn clone
     private function __clone() {}
 }
+?>
