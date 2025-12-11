@@ -1,1 +1,347 @@
-/* Main stylesheet */
+/* ========== Global / Reset ========== */
+:root{
+  --primary: #0d6efd; /* bootstrap primary */
+  --secondary: #6c757d;
+  --muted: #6c757d;
+  --bg: #f8f9fa;
+  --card-bg: #ffffff;
+  --accent: #20c997;
+  --danger: #dc3545;
+  --success: #198754;
+  --max-width: 1200px;
+  --radius: 12px;
+  --transition: 0.2s ease-in-out;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md: 0 6px 18px rgba(0,0,0,0.08);
+}
+
+html,body{
+  height:100%;
+  background: var(--bg);
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  color:#222;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  line-height:1.5;
+}
+
+/* Container constraints */
+.app-container{
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 1.25rem;
+}
+
+/* ========== Cards & Lists ========== */
+.card-course {
+  background: var(--card-bg);
+  border: 1px solid rgba(13,110,253,0.06);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition), box-shadow var(--transition);
+  overflow: hidden;
+}
+
+.card-course:hover{
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+
+.card-course .card-body {
+  padding: 1rem;
+}
+
+.course-title {
+  font-weight: 600;
+  font-size: 1.05rem;
+  margin-bottom: 0.35rem;
+}
+
+.course-meta {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+/* Course list grid */
+.course-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+/* Thumbnail */
+.course-thumb {
+  height: 160px;
+  object-fit: cover;
+  width: 100%;
+  display: block;
+  border-bottom: 1px solid rgba(0,0,0,0.04);
+}
+
+/* ========== Search & Filters ========== */
+.search-filter-bar {
+  display:flex;
+  gap:0.5rem;
+  align-items:center;
+  margin-bottom:1rem;
+  flex-wrap:wrap;
+}
+
+.search-filter-bar .form-control {
+  min-width: 240px;
+  flex: 1 1 320px;
+}
+
+.filter-tags {
+  display:flex;
+  gap:0.4rem;
+  flex-wrap:wrap;
+}
+
+.filter-tags .badge {
+  cursor:pointer;
+  padding: 0.45rem 0.6rem;
+  border-radius: 999px;
+  transition: all var(--transition);
+  background: #fff;
+  border:1px solid rgba(0,0,0,0.06);
+}
+
+.filter-tags .badge.active {
+  background: var(--primary);
+  color:#fff;
+  border-color: rgba(13,110,253,0.2);
+}
+
+/* ========== Course Detail ========== */
+.course-detail {
+  display:grid;
+  grid-template-columns: 1fr 320px;
+  gap:1.25rem;
+}
+
+@media (max-width: 900px){
+  .course-detail { grid-template-columns: 1fr; }
+}
+
+.course-detail .sidebar {
+  position:sticky;
+  top:1.25rem;
+  align-self:start;
+}
+
+.course-actions {
+  display:flex;
+  gap:0.6rem;
+  margin-top:0.8rem;
+}
+
+.btn-enroll {
+  background: linear-gradient(90deg,var(--primary), #0056d6);
+  color:#fff;
+  border:none;
+  box-shadow: 0 6px 18px rgba(13,110,253,0.12);
+  padding: 0.6rem 0.9rem;
+  border-radius: 8px;
+}
+
+.btn-enroll[disabled]{
+  opacity:0.6;
+  cursor:not-allowed;
+}
+
+/* Price/Meta block */
+.course-info {
+  background: linear-gradient(180deg,#fff, #fbfdff);
+  border-radius:10px;
+  padding:0.9rem;
+  border: 1px solid rgba(0,0,0,0.03);
+}
+
+/* ========== Enrollment / Badges ========== */
+.badge-status {
+  border-radius: 10px;
+  padding: 0.35rem 0.6rem;
+  font-size: 0.8rem;
+}
+
+.badge-ongoing { background: rgba(13,110,253,0.08); color: var(--primary); }
+.badge-completed { background: rgba(25,135,84,0.08); color: var(--success); }
+.badge-draft { background: rgba(108,117,125,0.08); color: var(--secondary); }
+
+/* ========== Enrolled Courses & Progress ========== */
+.enrolled-list .list-item {
+  display:flex;
+  gap:0.75rem;
+  align-items:center;
+  padding:0.65rem;
+  border-radius:8px;
+  background:#fff;
+  border:1px solid rgba(0,0,0,0.03);
+  margin-bottom:0.6rem;
+}
+
+.enrolled-thumb { width:90px; height:60px; object-fit:cover; border-radius:6px; }
+
+/* Progress bar (override bootstrap) */
+.progress {
+  height: 10px;
+  background: rgba(0,0,0,0.05);
+  border-radius: 999px;
+  overflow: visible;
+}
+.progress .progress-bar {
+  border-radius: 999px;
+  transition: width 0.5s ease;
+  box-shadow: none;
+}
+
+/* Small circular progress for dashboard */
+.progress-circle {
+  width:56px; height:56px; border-radius:50%;
+  display:grid; place-items:center;
+  background:linear-gradient(180deg,#fff,#f6fbff);
+  border:1px solid rgba(0,0,0,0.04);
+  font-weight:600;
+}
+
+/* ========== Lesson & Material Viewer ========== */
+.lesson-card {
+  background: #fff;
+  border: 1px solid rgba(0,0,0,0.04);
+  padding: 0.8rem;
+  border-radius:10px;
+  margin-bottom:0.6rem;
+  display:flex;
+  gap:0.75rem;
+  align-items:flex-start;
+}
+
+.lesson-meta { font-size:0.85rem; color:var(--muted); }
+
+.material-list { list-style:none; padding:0; margin:0; }
+.material-list li {
+  padding:0.6rem; border-radius:8px; margin-bottom:0.4rem;
+  background: #fff; border:1px solid rgba(0,0,0,0.03);
+  display:flex; justify-content:space-between; gap:0.6rem; align-items:center;
+}
+
+/* File icon */
+.material-list .meta {
+  display:flex; gap:0.6rem; align-items:center;
+}
+
+/* ========== Instructor Panel ========== */
+.instructor-header {
+  display:flex; align-items:center; justify-content:space-between;
+  gap:0.5rem; margin-bottom:1rem;
+}
+
+.instructor-actions .btn {
+  border-radius:8px;
+}
+
+/* Course management table */
+.table-manage thead th { background: #fafbff; }
+.table-manage tbody tr:hover { background: #fff; transform: none; }
+
+/* Form helpers */
+.form-card {
+  background:#fff; border:1px solid rgba(0,0,0,0.03); padding:1rem; border-radius:10px;
+}
+
+/* Upload dropzone simple style */
+.dropzone {
+  border: 2px dashed rgba(13,110,253,0.12);
+  padding:1.1rem;
+  border-radius:10px;
+  text-align:center;
+  background: rgba(13,110,253,0.02);
+  cursor:pointer;
+}
+.dropzone p { margin:0; font-size:0.95rem; color:var(--muted); }
+
+/* ========== Admin Panel ========== */
+.admin-grid {
+  display:grid;
+  grid-template-columns: 250px 1fr;
+  gap:1rem;
+}
+
+@media (max-width: 900px){
+  .admin-grid { grid-template-columns: 1fr; }
+}
+
+/* Sidebar */
+.admin-sidebar {
+  background:#fff; border-radius:10px; padding:0.8rem;
+  border:1px solid rgba(0,0,0,0.03);
+}
+.admin-sidebar .nav-link {
+  color:var(--muted); padding:0.6rem 0.5rem; border-radius:6px; display:block;
+}
+.admin-sidebar .nav-link.active { background: rgba(13,110,253,0.06); color:var(--primary); }
+
+/* User table controls */
+.table-users .avatar { width:40px; height:40px; border-radius:50%; object-fit:cover; }
+
+/* Admin badges for status */
+.user-enabled { color: var(--success); font-weight:600; }
+.user-disabled { color: var(--danger); font-weight:600; }
+
+/* ========== System Stats / Dashboard ========== */
+.stat-card {
+  background: linear-gradient(180deg,#fff,#fbfdff);
+  border-radius:12px; padding:0.9rem; border:1px solid rgba(0,0,0,0.03);
+  display:flex; align-items:center; gap:0.8rem;
+}
+
+/* Simple chart container */
+.chart-box { background:#fff; border-radius:10px; padding:0.8rem; border:1px solid rgba(0,0,0,0.03); }
+
+/* ========== Modals & Small tweaks ========== */
+.modal .modal-content { border-radius: 12px; overflow:hidden; }
+
+/* Buttons */
+.btn-ghost {
+  background: transparent;
+  border: 1px solid rgba(0,0,0,0.06);
+  color: #222;
+  padding: 0.45rem 0.7rem;
+  border-radius: 8px;
+  transition: background var(--transition), transform var(--transition);
+}
+.btn-ghost:hover { background: rgba(0,0,0,0.02); transform: translateY(-1px); }
+
+/* Danger action */
+.btn-danger-soft {
+  background: rgba(220,53,69,0.08);
+  color: var(--danger);
+  border: none;
+  border-radius: 8px;
+}
+
+/* Utility */
+.text-muted-sm { font-size:0.85rem; color:var(--muted); }
+.mb-05 { margin-bottom: .5rem; }
+.mt-05 { margin-top: .5rem; }
+
+/* ========== Accessibility & small screens ========== */
+@media (max-width: 576px){
+  .search-filter-bar .form-control { min-width: 100%; flex-basis: 100%; }
+  .course-actions { flex-direction:column; align-items:stretch; }
+}
+
+/* ========== Example classes for server messages ========== */
+.alert-success-custom { background: rgba(25,135,84,0.08); color: var(--success); border-radius:8px; padding:0.6rem; }
+.alert-info-custom { background: rgba(13,110,253,0.06); color: var(--primary); border-radius:8px; padding:0.6rem; }
+
+/* ========== Small helpers for consistent spacing in views ========== */
+.section-title { font-size:1.15rem; font-weight:600; margin-bottom:0.6rem; }
+.section-sub { color:var(--muted); font-size:0.9rem; margin-bottom:1rem; }
+
+/* ========== Print styles ========== */
+@media print {
+  body { background:#fff; }
+  .no-print, .btn { display:none !important; }
+}

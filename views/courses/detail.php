@@ -1,1 +1,83 @@
-<?php
+<?php include __DIR__ . '/../layouts/header.php'; ?>
+
+<div class="course-detail">
+
+    <!-- Tiêu đề khóa học -->
+    <h1><?= htmlspecialchars($course['title']) ?></h1>
+
+    <!-- Danh mục -->
+    <p><strong>Danh mục:</strong> <?= htmlspecialchars($course['category_name']) ?></p>
+
+    <!-- Giảng viên -->
+    <p><strong>Giảng viên:</strong> <?= htmlspecialchars($course['instructor_name']) ?></p>
+
+    <!-- Mô tả khóa học -->
+    <div class="course-description">
+        <h3>Mô tả khóa học</h3>
+        <p><?= nl2br(htmlspecialchars($course['description'])) ?></p>
+    </div>
+
+    <!-- Ảnh khóa học -->
+    <?php if (!empty($course['image'])): ?>
+        <div class="course-image">
+            <img src="/assets/uploads/courses/<?= htmlspecialchars($course['image']) ?>" alt="Course Image">
+        </div>
+    <?php endif; ?>
+
+    <!-- Nút đăng ký -->
+    <div class="enroll-box">
+        <?php if ($is_enrolled): ?>
+            <button class="btn disabled">Bạn đã đăng ký khóa học này</button>
+        <?php else: ?>
+            <form action="/enrollment/register" method="POST">
+                <input type="hidden" name="course_id" value="<?= $course['id'] ?>">
+                <button type="submit" class="btn btn-primary">Đăng ký khóa học</button>
+            </form>
+        <?php endif; ?>
+    </div>
+
+    <hr>
+
+    <!-- Danh sách bài học -->
+    <div class="lessons-list">
+        <h3>Nội dung khóa học</h3>
+
+        <?php if (!empty($lessons)): ?>
+            <ul>
+                <?php foreach ($lessons as $lesson): ?>
+                    <li>
+                        <a href="/lesson/view?id=<?= $lesson['id'] ?>">
+                            <?= htmlspecialchars($lesson['title']) ?>
+                        </a>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+        <?php else: ?>
+            <p>Khóa học chưa có bài học nào.</p>
+        <?php endif; ?>
+    </div>
+
+    <hr>
+
+    <!-- Tài liệu -->
+    <div class="materials-list">
+        <h3>Tài liệu học tập</h3>
+
+        <?php if (!empty($materials)): ?>
+            <ul>
+                <?php foreach ($materials as $m): ?>
+                    <li>
+                        <a href="/assets/uploads/materials/<?= htmlspecialchars($m['file_path']) ?>" target="_blank">
+                            <?= htmlspecialchars($m['title']) ?>
+                        </a>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+        <?php else: ?>
+            <p>Chưa có tài liệu nào cho khóa học.</p>
+        <?php endif; ?>
+    </div>
+
+</div>
+
+<?php include __DIR__ . '/../layouts/footer.php'; ?>
