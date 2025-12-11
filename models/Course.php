@@ -9,33 +9,29 @@ class Course
 
     public function __construct()
     {
-        $db = new Database();
-        $this->conn = $db->connect();
+        $db = Database::getInstance();
+        $this->conn = $db->getConnection();
     }
 
     /* ===============================
         LẤY TẤT CẢ KHÓA HỌC + PHÂN TRANG
     =================================*/
-    public static function getAllCourses($limit = 20, $offset = 0)
-{
-    // Tạo kết nối mới bên trong phương thức static
-    $db = (new Database())->connect();
+    public function getAllCourses($limit = 20, $offset = 0)
+    {
+        $sql = "SELECT c.*, u.fullname AS instructor_name, cat.name AS category_name
+                FROM courses c
+                LEFT JOIN users u ON c.instructor_id = u.id
+                LEFT JOIN categories cat ON c.category_id = cat.id
+                ORDER BY c.created_at DESC
+                LIMIT :limit OFFSET :offset";
 
-    $sql = "SELECT c.*, u.fullname AS instructor_name, cat.name AS category_name
-            FROM courses c
-            LEFT JOIN users u ON c.instructor_id = u.id
-            LEFT JOIN categories cat ON c.category_id = cat.id
-            ORDER BY c.created_at DESC
-            LIMIT :limit OFFSET :offset";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindValue(":limit", (int)$limit, PDO::PARAM_INT);
+        $stmt->bindValue(":offset", (int)$offset, PDO::PARAM_INT);
+        $stmt->execute();
 
-    $stmt = $db->prepare($sql);
-    $stmt->bindValue(":limit", (int)$limit, PDO::PARAM_INT);
-    $stmt->bindValue(":offset", (int)$offset, PDO::PARAM_INT);
-    $stmt->execute();
-
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
-
+        return $stmt->fetchAll();
+    }
 
     /* ===============================
         TÌM KIẾM KHÓA HỌC
@@ -105,7 +101,7 @@ class Course
     public function createCourse($data)
     {
         $sql = "INSERT INTO courses (title, description, instructor_id, category_id, price, duration_weeks, level, image)
-                VALUES (:title, :description, :instructor_id, :category_id, :price, :duration_weeks, :level, :image)";
+                VALUES (:title, :description, :instructor_id, :category_id, :price, :duration_weeks, :level, :image,NOW())";
 
         $stmt = $this->conn->prepare($sql);
 
@@ -133,7 +129,8 @@ class Course
                     price = :price,
                     duration_weeks = :duration_weeks,
                     level = :level,
-                    image = :image
+                    image = :image,
+                    updated_at = NOW()
                 WHERE id = :id AND instructor_id = :instructor_id";
 
         $stmt = $this->conn->prepare($sql);

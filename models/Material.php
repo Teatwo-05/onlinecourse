@@ -8,8 +8,8 @@ class Material {
     private $table = "materials";
 
     public function __construct() {
-        $db = new Database();
-        $this->conn = $db->connect();
+       $db = Database::getInstance();
+$this->conn = $db->getConnection();
     }
 
     // Lấy danh sách tài liệu theo lesson_id

@@ -2,9 +2,7 @@
 
 class LessonController
 {
-    // ============================
     // HỌC VIÊN XEM BÀI HỌC
-    // ============================
     public function view()
     {
         $lessonId = $_GET['id'] ?? null;
@@ -13,20 +11,21 @@ class LessonController
             die("Thiếu ID bài học.");
         }
 
-        $lesson = Lesson::findById($lessonId);
+        // Sửa: Lesson::findById() → Lesson::getLessonById()
+        $lessonModel = new Lesson();
+        $lesson = $lessonModel->getLessonById($lessonId);
+        
         if (!$lesson) {
             die("Bài học không tồn tại.");
         }
 
-        $materials = Material::getByLesson($lessonId);
+        $materialModel = new Material();
+        $materials = $materialModel->getByLesson($lessonId);
 
-        // load view student
         include 'views/student/lesson/view.php';
     }
 
-    // =================================================
-    // GIẢNG VIÊN: DANH SÁCH BÀI HỌC TRONG KHÓA HỌC
-    // =================================================
+    // GIẢNG VIÊN: DANH SÁCH BÀI HỌC
     public function manage()
     {
         $courseId = $_GET['course_id'] ?? null;
@@ -35,29 +34,17 @@ class LessonController
             die('Thiếu course_id.');
         }
 
-        $course = Course::findById($courseId);
-        $lessons = Lesson::getByCourse($courseId);
+        // Giả sử Course::getById() tồn tại
+        $course = Course::getById($courseId);
+        
+        // Sửa: Lesson::getByCourse() → Lesson::getLessonsByCourse()
+        $lessonModel = new Lesson();
+        $lessons = $lessonModel->getLessonsByCourse($courseId);
 
         include 'views/instructor/lessons/manage.php';
     }
 
-    // =================================================
-    // GIẢNG VIÊN: FORM TẠO BÀI HỌC
-    // =================================================
-    public function create()
-    {
-        $courseId = $_GET['course_id'] ?? null;
-
-        if (!$courseId) {
-            die('Thiếu course_id.');
-        }
-
-        include 'views/instructor/lessons/create.php';
-    }
-
-    // =================================================
-    // GIẢNG VIÊN: LƯU BÀI HỌC VỪA TẠO
-    // =================================================
+    // GIẢNG VIÊN: LƯU BÀI HỌC
     public function store()
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -69,20 +56,21 @@ class LessonController
         $content = $_POST['content'];
         $order = $_POST['lesson_order'];
 
-        Lesson::create([
+        // Sửa: Lesson::create() → Lesson::createLesson()
+        $lessonModel = new Lesson();
+        $lessonModel->createLesson([
             'course_id' => $courseId,
             'title' => $title,
             'content' => $content,
-            'lesson_order' => $order
+            'lesson_order' => $order,
+            'video_url' => $_POST['video_url'] ?? '' // Thêm video_url
         ]);
 
         header("Location: index.php?controller=Lesson&action=manage&course_id=$courseId");
         exit;
     }
 
-    // =================================================
-    // GIẢNG VIÊN: FORM CHỈNH SỬA BÀI HỌC
-    // =================================================
+    // GIẢNG VIÊN: FORM CHỈNH SỬA
     public function edit()
     {
         $lessonId = $_GET['id'] ?? null;
@@ -91,14 +79,14 @@ class LessonController
             die("Thiếu ID bài học.");
         }
 
-        $lesson = Lesson::findById($lessonId);
+        // Sửa: Lesson::findById() → Lesson::getLessonById()
+        $lessonModel = new Lesson();
+        $lesson = $lessonModel->getLessonById($lessonId);
 
         include 'views/instructor/lessons/edit.php';
     }
 
-    // =================================================
-    // GIẢNG VIÊN: CẬP NHẬT BÀI HỌC
-    // =================================================
+    // GIẢNG VIÊN: CẬP NHẬT
     public function update()
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -111,19 +99,20 @@ class LessonController
         $content = $_POST['content'];
         $order = $_POST['lesson_order'];
 
-        Lesson::update($lessonId, [
+        // Sửa: Lesson::update() → Lesson::updateLesson()
+        $lessonModel = new Lesson();
+        $lessonModel->updateLesson($lessonId, [
             'title' => $title,
             'content' => $content,
-            'lesson_order' => $order
+            'lesson_order' => $order,
+            'video_url' => $_POST['video_url'] ?? ''
         ]);
 
         header("Location: index.php?controller=Lesson&action=manage&course_id=$courseId");
         exit;
     }
 
-    // =================================================
-    // GIẢNG VIÊN: XÓA BÀI HỌC
-    // =================================================
+    // GIẢNG VIÊN: XÓA
     public function delete()
     {
         $lessonId = $_GET['id'] ?? null;
@@ -133,7 +122,9 @@ class LessonController
             die("Thiếu tham số.");
         }
 
-        Lesson::delete($lessonId);
+        // Sửa: Lesson::delete() → Lesson::deleteLesson()
+        $lessonModel = new Lesson();
+        $lessonModel->deleteLesson($lessonId);
 
         header("Location: index.php?controller=Lesson&action=manage&course_id=$courseId");
         exit;

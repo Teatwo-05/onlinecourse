@@ -7,18 +7,16 @@ class Category {
     private $table = "categories";
 
     public function __construct() {
-        $db = new Database();
-        $this->conn = $db->connect();
+        $db = Database::getInstance();
+        $this->conn = $db->getConnection();
     }
 
     // Lấy toàn bộ danh mục
-    public static function getAll() {
-        $db = new Database();
-    $conn = $db->connect();
-    $sql = "SELECT * FROM categories ORDER BY id DESC";
-    $stmt = $conn->prepare($sql);
-    $stmt->execute();
-    return $stmt->fetchAll();
+    public function getAll() {
+        $sql = "SELECT * FROM {$this->table} ORDER BY id DESC";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll();
     }
 
     // Lấy một danh mục theo ID
@@ -33,32 +31,26 @@ class Category {
     public function create($name, $description) {
         $sql = "INSERT INTO {$this->table} (name, description) VALUES (:name, :description)";
         $stmt = $this->conn->prepare($sql);
-
-        return $stmt->execute([
-            ":name" => $name,
-            ":description" => $description
-        ]);
+        $stmt->bindValue(':name', $name, PDO::PARAM_STR);
+        $stmt->bindValue(':description', $description, PDO::PARAM_STR);
+        return $stmt->execute();
     }
 
     // Cập nhật danh mục
     public function update($id, $name, $description) {
         $sql = "UPDATE {$this->table} SET name = :name, description = :description WHERE id = :id";
         $stmt = $this->conn->prepare($sql);
-
-        return $stmt->execute([
-            ":name" => $name,
-            ":description" => $description,
-            ":id" => $id
-        ]);
+        $stmt->bindValue(':name', $name, PDO::PARAM_STR);
+        $stmt->bindValue(':description', $description, PDO::PARAM_STR);
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+        return $stmt->execute();
     }
 
     // Xóa danh mục
     public function delete($id) {
         $sql = "DELETE FROM {$this->table} WHERE id = ?";
         $stmt = $this->conn->prepare($sql);
-
         return $stmt->execute([$id]);
     }
 }
-
 ?>
