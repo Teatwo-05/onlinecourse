@@ -1,69 +1,188 @@
 <?php
-class Course {
-    private $db;
 
-    public $id;
-    public $title;
-    public $description;
-    public $instructor_id;
-    public $category_id;
-    public $price;
-    public $image;
+require_once __DIR__ . '/../config/Database.php';
 
-    public function __construct($dbConnection) {
-        $this->db = $dbConnection;
+class Course
+{
+    private $conn;
+    private $table = "courses";
+
+    public function __construct()
+    {
+        $db = Database::getInstance();
+        $this->conn = $db->getConnection();
     }
 
-    // Lấy tất cả khóa học (Kèm tên giảng viên và tên danh mục)
-    public function getAll() {
-        // Sử dụng JOIN để lấy thông tin liên quan
-        $query = "SELECT c.*, u.username as instructor_name, cat.name as category_name 
-                  FROM courses c
-                  LEFT JOIN users u ON c.instructor_id = u.id
-                  LEFT JOIN categories cat ON c.category_id = cat.id
-                  ORDER BY c.created_at DESC";
-        
-        $stmt = $this->db->prepare($query);
+    /* ===============================
+        LẤY TẤT CẢ KHÓA HỌC + PHÂN TRANG
+    =================================*/
+    public function getAllCourses($limit = 20, $offset = 0)
+    {
+        $sql = "SELECT c.*, u.fullname AS instructor_name, cat.name AS category_name
+                FROM courses c
+                LEFT JOIN users u ON c.instructor_id = u.id
+                LEFT JOIN categories cat ON c.category_id = cat.id
+                ORDER BY c.created_at DESC
+                LIMIT :limit OFFSET :offset";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindValue(":limit", (int)$limit, PDO::PARAM_INT);
+        $stmt->bindValue(":offset", (int)$offset, PDO::PARAM_INT);
         $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        return $stmt->fetchAll();
     }
 
-    // Lấy chi tiết 1 khóa học
+    /* ===============================
+        TÌM KIẾM KHÓA HỌC
+    =================================*/
+    public function searchCourses($keyword)
+    {
+        $sql = "SELECT * FROM courses 
+                WHERE title LIKE :keyword OR description LIKE :keyword
+                ORDER BY created_at DESC";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindValue(":keyword", "%$keyword%");
+        $stmt->execute();
+
+        return $stmt->fetchAll();
+    }
+
+    /* ===============================
+        LỌC KHÓA HỌC THEO DANH MỤC
+    =================================*/
+    public function getCoursesByCategory($category_id)
+    {
+        $sql = "SELECT * FROM courses WHERE category_id = :category_id";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindValue(":category_id", $category_id, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return $stmt->fetchAll();
+    }
+
+    /* ===============================
+        LẤY CHI TIẾT KHÓA HỌC
+    =================================*/
     public function getById($id) {
-        $query = "SELECT * FROM courses WHERE id = :id LIMIT 1";
-        $stmt = $this->db->prepare($query);
-        $stmt->bindParam(':id', $id);
+        $sql = "SELECT * FROM {$this->table} WHERE id = :id";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
         $stmt->execute();
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        return $stmt->fetch();
     }
 
-    // Tạo khóa học mới
-    public function create() {
-        $query = "INSERT INTO courses (title, description, instructor_id, category_id, price, image)
-                  VALUES (:title, :description, :instructor, :category, :price, :image)";
-        
-        $stmt = $this->db->prepare($query);
-        // Bind các tham số tương tự như User...
-        // ...
-        return $stmt->execute();
+    public function getCourseById($id)
+    {
+        $sql = "SELECT c.*, 
+                       u.fullname AS instructor_name,
+                       cat.name AS category_name
+                FROM courses c
+                LEFT JOIN users u ON c.instructor_id = u.id
+                LEFT JOIN categories cat ON c.category_id = cat.id
+                WHERE c.id = :id";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindValue(":id", $id, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return $stmt->fetch();
     }
-    //tìm kiếm khóa học theo từ khóa
-    public static function search($keyword) {
-    $db = (new Database())->connect();
 
-    $stmt = $db->prepare("
-        SELECT * FROM courses 
-        WHERE title LIKE ? OR description LIKE ?
-        ORDER BY created_at DESC
-    ");
+    /* ===============================
+        LẤY KHÓA HỌC THEO GIẢNG VIÊN
+    =================================*/
+    public function getCoursesByInstructor($instructor_id)
+    {
+        $sql = "SELECT * FROM courses WHERE instructor_id = :instructor_id";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindValue(":instructor_id", $instructor_id, PDO::PARAM_INT);
+        $stmt->execute();
 
-    $kw = '%' . $keyword . '%';
-    $stmt->execute([$kw, $kw]);
+        return $stmt->fetchAll();
+    }
 
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    /* ===============================
+        TẠO KHÓA HỌC (GIẢNG VIÊN)
+    =================================*/
+    public function createCourse($data)
+    {
+        $sql = "INSERT INTO courses (title, description, instructor_id, category_id, price, duration_weeks, level, image)
+                VALUES (:title, :description, :instructor_id, :category_id, :price, :duration_weeks, :level, :image,NOW())";
+
+        $stmt = $this->conn->prepare($sql);
+
+        return $stmt->execute([
+            ":title" => $data['title'],
+            ":description" => $data['description'],
+            ":instructor_id" => $data['instructor_id'],
+            ":category_id" => $data['category_id'],
+            ":price" => $data['price'],
+            ":duration_weeks" => $data['duration_weeks'],
+            ":level" => $data['level'],
+            ":image" => $data['image'] ?? null
+        ]);
+    }
+
+    /* ===============================
+        CẬP NHẬT KHÓA HỌC
+    =================================*/
+    public function updateCourse($id, $data)
+    {
+        $sql = "UPDATE courses 
+                SET title = :title,
+                    description = :description,
+                    category_id = :category_id,
+                    price = :price,
+                    duration_weeks = :duration_weeks,
+                    level = :level,
+                    image = :image,
+                    updated_at = NOW()
+                WHERE id = :id AND instructor_id = :instructor_id";
+
+        $stmt = $this->conn->prepare($sql);
+
+        return $stmt->execute([
+            ":title" => $data['title'],
+            ":description" => $data['description'],
+            ":category_id" => $data['category_id'],
+            ":price" => $data['price'],
+            ":duration_weeks" => $data['duration_weeks'],
+            ":level" => $data['level'],
+            ":image" => $data['image'],
+            ":id" => $id,
+            ":instructor_id" => $data['instructor_id']
+        ]);
+    }
+
+    /* ===============================
+        XÓA KHÓA HỌC
+    =================================*/
+    public function deleteCourse($id, $instructor_id)
+    {
+        $sql = "DELETE FROM courses WHERE id = :id AND instructor_id = :instructor_id";
+
+        $stmt = $this->conn->prepare($sql);
+        return $stmt->execute([
+            ":id" => $id,
+            ":instructor_id" => $instructor_id
+        ]);
+    }
+    // Thêm vào class Course trong models/Course.php
+
+public function countInstructorCourses($instructor_id) 
+{
+    // Giả định $this->conn đã được khởi tạo trong constructor của Course Model
+    $sql = "SELECT COUNT(*) as total 
+            FROM courses 
+            WHERE instructor_id = :id";
+            
+    $stmt = $this->conn->prepare($sql);
+    $stmt->execute([':id' => $instructor_id]);
+    
+    // Trả về số lượng
+    return $stmt->fetch()['total'] ?? 0;
+}
 }
 
-
-
-}
-?>

@@ -1,51 +1,30 @@
-/* 1. Body: Nền xám nhẹ, font chữ hiện đại */
-body {
-    background-color: #f8f9fa;
-    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    color: #333; /* Màu chữ đen dịu, không đen kịt */
-    line-height: 1.6; /* Dãn dòng cho dễ đọc */
+/* Thêm vào assets/css/style.css */
+.course-thumb {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 8px 8px 0 0;
 }
 
-/* 2. Header khóa học: Nền tối, chữ trắng */
-.course-header {
-    background-color: #212529;
-    color: white;
-    padding: 60px 0;
+.card {
+    transition: transform 0.3s;
+    border: 1px solid #e0e0e0;
 }
-/* Main stylesheet */
-* { box-sizing: border-box; }
-body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; margin:0; background: #f4f7fb; color:#222; }
 
-/* Layout */
-.container { max-width: 960px; margin: 0 auto; padding: 20px; }
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
 
-/* Auth card */
-.auth-wrapper { min-height: 80vh; display:flex; align-items:center; justify-content:center; padding: 40px 16px; }
-.auth-card { width:100%; max-width:420px; background:#fff; border-radius:10px; box-shadow:0 6px 18px rgba(20,30,60,0.08); padding:24px; }
-.auth-card h2 { margin:0 0 12px; font-size:20px; }
+.card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.5rem;
+}
 
-.form-group { margin-bottom:14px; }
-.form-group label { display:block; font-size:13px; margin-bottom:6px; color:#444; }
-.form-control { width:100%; padding:10px 12px; border:1px solid #d6dbe6; border-radius:6px; font-size:14px; }
-.form-control:focus { outline:none; border-color:#7aa7ff; box-shadow:0 0 0 3px rgba(122,167,255,0.12); }
-
-.btn { display:inline-block; padding:10px 16px; background:#2f80ed; color:#fff; border-radius:6px; border:0; cursor:pointer; font-weight:600; }
-.btn.secondary { background:#eee; color:#333; }
-
-.small { font-size:13px; color:#666; }
-.muted { color:#888; }
-
-.msg { padding:10px 12px; border-radius:6px; margin-bottom:12px; font-size:14px; }
-.msg.error { background:#ffecec; color:#9b2b2b; border:1px solid #f5c6c6; }
-.msg.success { background:#e9f8ee; color:#1b7a3a; border:1px solid #cfead0; }
-
-.password-row { display:flex; gap:8px; }
-.password-row .form-control { flex:1; }
-.pw-toggle { padding:8px 10px; border:1px solid #d6dbe6; border-radius:6px; background:#fafafa; cursor:pointer; }
-
-.pw-strength { height:8px; border-radius:6px; background:#eee; overflow:hidden; margin-top:6px; }
-.pw-strength > i { display:block; height:100%; width:0%; background:linear-gradient(90deg,#ff5f6d,#ffc371); transition:width .25s ease; }
-
-.auth-footer { margin-top:12px; display:flex; justify-content:space-between; align-items:center; }
-
-@media(max-width:480px){ .auth-card{padding:16px} }
+.card-text {
+    color: #666;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}

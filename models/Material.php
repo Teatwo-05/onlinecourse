@@ -1,68 +1,76 @@
 <?php
-class Material {
-    private $db;
-    
-    // Thuộc tính ánh xạ với bảng materials
-    public $id;
-    public $lesson_id;
-    public $filename;   // Tên file hiển thị (VD: "Bài tập chương 1.pdf")
-    public $file_path;  // Đường dẫn thực tế (VD: "uploads/materials/file_123.pdf")
-    public $file_type;  // Loại file (VD: "application/pdf", "image/png")
-    public $uploaded_at;
 
-    public function __construct($db) {
-        $this->db = $db;
+require_once __DIR__ . '/../config/Database.php';
+
+class Material {
+
+    private $conn;
+    private $table = "materials";
+
+    public function __construct() {
+       $db = Database::getInstance();
+$this->conn = $db->getConnection();
     }
 
-    // 1. Lấy danh sách tài liệu của một bài học cụ thể
-    // Dùng khi hiển thị trang học (View Lesson)
-    public function getByLessonId($lessonId) {
-        $query = "SELECT * FROM materials WHERE lesson_id = :lesson_id ORDER BY uploaded_at DESC";
-        $stmt = $this->db->prepare($query);
-        $stmt->bindParam(':lesson_id', $lessonId);
+    // Lấy danh sách tài liệu theo lesson_id
+    public function getByLesson($lesson_id) {
+        $sql = "SELECT * FROM {$this->table} WHERE lesson_id = :lesson_id ORDER BY uploaded_at DESC";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindValue(':lesson_id', $lesson_id, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+
+    // Thêm tài liệu mới
+    public function create($lesson_id, $filename, $file_path, $file_type) {
+        $sql = "INSERT INTO {$this->table} (lesson_id, filename, file_path, file_type) 
+                VALUES (:lesson_id, :filename, :file_path, :file_type)";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindValue(':lesson_id', $lesson_id, PDO::PARAM_INT);
+        $stmt->bindValue(':filename', $filename, PDO::PARAM_STR);
+        $stmt->bindValue(':file_path', $file_path, PDO::PARAM_STR);
+        $stmt->bindValue(':file_type', $file_type, PDO::PARAM_STR);
+        return $stmt->execute();
+    }
+
+    // Lấy một tài liệu theo ID
+    public function find($id) {
+        $sql = "SELECT * FROM {$this->table} WHERE id = :id LIMIT 1";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetch();
+    }
+
+    // Xóa tài liệu
+    public function delete($id) {
+        $sql = "DELETE FROM {$this->table} WHERE id = :id";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+        return $stmt->execute();
+    }
+    public function getMaterialsByCourse($courseId) {
+    try {
+        // Lấy tất cả tài liệu (m.*) và tên bài học (l.title)
+        $sql = "SELECT m.*, l.title as lesson_title 
+                FROM {$this->table} m  
+                JOIN lessons l ON m.lesson_id = l.id
+                WHERE l.course_id = :courseId 
+                AND m.deleted_at IS NULL
+                ORDER BY l.lesson_order, m.id"; // Sắp xếp theo thứ tự bài học
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindValue(':courseId', $courseId, PDO::PARAM_INT);
         $stmt->execute();
         
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
+        return $stmt->fetchAll();
 
-    // 2. Lưu thông tin file vào Database (Upload)
-    // Lưu ý: Việc upload file vật lý vào thư mục server sẽ làm ở Controller
-    // Hàm này chỉ lưu đường dẫn vào DB
-    public function create() {
-        $query = "INSERT INTO materials (lesson_id, filename, file_path, file_type) 
-                  VALUES (:lesson_id, :filename, :file_path, :file_type)";
-        
-        $stmt = $this->db->prepare($query);
-
-        // Làm sạch dữ liệu (Sanitize)
-        $this->filename = htmlspecialchars(strip_tags($this->filename));
-        $this->file_path = htmlspecialchars(strip_tags($this->file_path));
-        $this->file_type = htmlspecialchars(strip_tags($this->file_type));
-
-        // Bind dữ liệu
-        $stmt->bindParam(':lesson_id', $this->lesson_id);
-        $stmt->bindParam(':filename', $this->filename);
-        $stmt->bindParam(':file_path', $this->file_path);
-        $stmt->bindParam(':file_type', $this->file_type);
-
-        if ($stmt->execute()) {
-            return true;
-        }
-        return false;
-    }
-
-    // 3. Xóa tài liệu (Cần thiết khi giảng viên muốn xóa file cũ)
-    public function delete($id) {
-        // Bước 1: Lấy đường dẫn file để xóa file vật lý (Controller sẽ gọi cái này trước)
-        // Bước 2: Xóa record trong DB
-        $query = "DELETE FROM materials WHERE id = :id";
-        $stmt = $this->db->prepare($query);
-        $stmt->bindParam(':id', $id);
-        
-        if ($stmt->execute()) {
-            return true;
-        }
-        return false;
+    } catch (PDOException $e) {
+        // Ghi log lỗi và trả về mảng rỗng
+        error_log("Error in getMaterialsByCourse: " . $e->getMessage());
+        return [];
     }
 }
+}
+
 ?>
