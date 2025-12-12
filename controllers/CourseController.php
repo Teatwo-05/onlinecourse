@@ -1,4 +1,7 @@
 <?php
+require_once 'config/Database.php';
+require_once 'models/Course.php';
+require_once 'models/Lesson.php';
 
 require_once 'BaseController.php';
 
