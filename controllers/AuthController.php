@@ -87,7 +87,8 @@ class AuthController
             'fullname' => $result['user']['fullname'],
             'role' => $result['user']['role']
         ];
-
+		echo "Session saved. Role: " . $_SESSION['user']['role'] . "<br>";
+echo "Redirecting to Dashboard...";
         $this->redirectToDashboard();
     }
 
@@ -257,7 +258,7 @@ class AuthController
             exit;
         }
 
-        $role = $_SESSION['user']['role'] ?? 'student';
+        $role = $_SESSION['user']['role'] ?? '0';
 
         switch ($role) {
             case 'student':
@@ -277,4 +278,19 @@ class AuthController
         }
         exit;
     }
+	private function convertRoleToString($role)
+{
+    if (is_numeric($role)) {
+        $role = (int)$role;
+        switch ($role) {
+            case 0: return 'student';
+            case 1: return 'instructor';
+            case 2: return 'admin';
+            default: return 'student';
+        }
+    }
+    
+    // Nếu đã là string, trả về nguyên bản
+    return strtolower($role);
+}
 }

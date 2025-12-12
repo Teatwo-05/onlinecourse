@@ -3,9 +3,15 @@ include_once __DIR__ . '/../models/Category.php';
 class AdminController
 {
     // Cần bổ sung các phương thức cơ bản
-    public function view($view, $data = []) {
-        extract($data);
-        include "views/$view.php";
+    public function dashboard()
+    {
+        $data = [
+            'title' => 'Dashboard ADMIN',
+            'user' => $_SESSION['user']
+        ];
+        
+        // Có thể lấy thêm dữ liệu từ model nếu cần
+        require_once 'views/admin/dashboard.php';
     }
 
     public function redirect($controller, $action = 'index', $params = []) {

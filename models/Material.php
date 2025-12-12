@@ -49,6 +49,28 @@ $this->conn = $db->getConnection();
         $stmt->bindValue(':id', $id, PDO::PARAM_INT);
         return $stmt->execute();
     }
+    public function getMaterialsByCourse($courseId) {
+    try {
+        // Lấy tất cả tài liệu (m.*) và tên bài học (l.title)
+        $sql = "SELECT m.*, l.title as lesson_title 
+                FROM {$this->table} m  
+                JOIN lessons l ON m.lesson_id = l.id
+                WHERE l.course_id = :courseId 
+                AND m.deleted_at IS NULL
+                ORDER BY l.lesson_order, m.id"; // Sắp xếp theo thứ tự bài học
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindValue(':courseId', $courseId, PDO::PARAM_INT);
+        $stmt->execute();
+        
+        return $stmt->fetchAll();
+
+    } catch (PDOException $e) {
+        // Ghi log lỗi và trả về mảng rỗng
+        error_log("Error in getMaterialsByCourse: " . $e->getMessage());
+        return [];
+    }
+}
 }
 
 ?>

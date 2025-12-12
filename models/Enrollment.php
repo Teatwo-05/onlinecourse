@@ -22,6 +22,54 @@ class Enrollment {
         
         return $stmt->fetch() !== false;
     }
+    public function isEnrolled($courseId, $studentId)
+{
+    try {
+        $sql = "SELECT COUNT(*) FROM enrollments 
+                WHERE course_id = :courseId 
+                AND student_id = :studentId 
+                LIMIT 1"; // Chỉ cần kiểm tra sự tồn tại
+                
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindValue(':courseId', $courseId, PDO::PARAM_INT);
+        $stmt->bindValue(':studentId', $studentId, PDO::PARAM_INT);
+        $stmt->execute();
+        
+        // Trả về true nếu COUNT > 0
+        return $stmt->fetchColumn() > 0;
+
+    } catch (PDOException $e) {
+        error_log("Error checking enrollment: " . $e->getMessage());
+        return false; // Mặc định là chưa đăng ký nếu có lỗi DB
+    }
+}
+public function enroll($courseId, $studentId)
+{
+    
+    try {
+        $sql = "INSERT INTO enrollments (course_id, student_id, enrolled_at) 
+                VALUES (:courseId, :studentId, NOW())";
+        
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindValue(':courseId', $courseId, PDO::PARAM_INT);
+        $stmt->bindValue(':studentId', $studentId, PDO::PARAM_INT);
+        
+        $success = $stmt->execute();
+        
+        if ($success) {
+            return ['success' => true, 'message' => 'Đăng ký thành công'];
+        } else {
+            return ['success' => false, 'message' => 'Lỗi khi thực hiện đăng ký'];
+        }
+    } catch (PDOException $e) {
+        // Xử lý lỗi trùng lặp (ví dụ: đã đăng ký rồi)
+        if (strpos($e->getMessage(), 'Integrity constraint violation: 1062 Duplicate entry') !== false) {
+             return ['success' => false, 'message' => 'Bạn đã đăng ký khóa học này rồi.'];
+        }
+        error_log("Enrollment error: " . $e->getMessage());
+        return ['success' => false, 'message' => 'Lỗi hệ thống khi đăng ký.'];
+    }
+}
 
     // 2. Tạo đăng ký mới
     public function create($data) {
@@ -154,5 +202,23 @@ class Enrollment {
         
         return $stmt->execute();
     }
+    // Thêm vào class Enrollment trong models/Enrollment.php
+
+public function countStudentsByInstructor($instructor_id) 
+{
+    // Đếm số lượng học viên ĐỘC LẬP (DISTINCT) đã đăng ký vào các khóa học của giảng viên này
+    $sql = "
+        SELECT COUNT(DISTINCT e.student_id) AS total_students
+        FROM enrollments e
+        JOIN courses c ON e.course_id = c.id
+        WHERE c.instructor_id = :instructor_id
+    ";
+    
+    $stmt = $this->conn->prepare($sql);
+    $stmt->execute([':instructor_id' => $instructor_id]);
+    
+    // Trả về số lượng
+    return $stmt->fetch()['total_students'] ?? 0;
+}
 }
 ?>

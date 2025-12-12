@@ -22,7 +22,7 @@ include __DIR__ . '/../layouts/header.php';
             <p class="number">
                 <?= isset($total_courses) ? intval($total_courses) : 0 ?>
             </p>
-            <a href="/student/my-courses" class="btn-link">Xem danh sách</a>
+            <a href="index.php?c=student&a=my_courses" class="btn-link">Xem danh sách</a>
         </div>
 
         <div class="card">
@@ -30,7 +30,7 @@ include __DIR__ . '/../layouts/header.php';
             <p class="number">
                 <?= !empty($progress_data) ? count($progress_data) : 0 ?>
             </p>
-            <a href="/student/course-progress" class="btn-link">Xem chi tiết</a>
+            <a href="index.php?c=student&a=course_progress" class="btn-link">Xem chi tiết</a>
         </div>
 
     </div>

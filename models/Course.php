@@ -169,5 +169,20 @@ class Course
             ":instructor_id" => $instructor_id
         ]);
     }
+    // Thêm vào class Course trong models/Course.php
+
+public function countInstructorCourses($instructor_id) 
+{
+    // Giả định $this->conn đã được khởi tạo trong constructor của Course Model
+    $sql = "SELECT COUNT(*) as total 
+            FROM courses 
+            WHERE instructor_id = :id";
+            
+    $stmt = $this->conn->prepare($sql);
+    $stmt->execute([':id' => $instructor_id]);
+    
+    // Trả về số lượng
+    return $stmt->fetch()['total'] ?? 0;
+}
 }
 

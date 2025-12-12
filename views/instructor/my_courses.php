@@ -1,5 +1,5 @@
 <?php
-include __DIR__ . '/../../layouts/header.php';
+include __DIR__ . '/../layouts/header.php';
 ?>
 
 <div class="container">
@@ -25,7 +25,7 @@ include __DIR__ . '/../../layouts/header.php';
                     </h3>
 
                     <!-- Mô tả ngắn -->
-                    <p><?= htmlspecialchars($course['short_description']) ?></p>
+                    <p><?= htmlspecialchars($course['description']) ?></p>
 
                     <p><strong>Danh mục:</strong> 
                         <?= htmlspecialchars($course['category_name'] ?? 'Chưa có danh mục') ?>
@@ -67,5 +67,5 @@ include __DIR__ . '/../../layouts/header.php';
 </div>
 
 <?php
-include __DIR__ . '/../../layouts/footer.php';
+include __DIR__ . '/../layouts/footer.php';
 ?>

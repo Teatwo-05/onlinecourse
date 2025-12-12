@@ -7,22 +7,20 @@ if (!defined('BASE_URL')) {
 
 <div class="home-page">
     <!-- Hero Section -->
-    <section class="hero-section bg-primary text-white py-5 mb-5">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-lg-6">
-                    <h1 class="display-4 fw-bold">Học mọi lúc, mọi nơi</h1>
-                    <p class="lead">Khám phá hàng ngàn khóa học chất lượng từ các giảng viên hàng đầu</p>
-                    <a href="index.php?c=course&a=index" class="btn btn-light btn-lg">
-                        <i class="fas fa-search"></i> Tìm khóa học ngay
-                    </a>
-                </div>
-                <div class="col-lg-6">
-                    <img src="<?= BASE_URL ?>/assets/img/hero-image.svg" alt="Học trực tuyến" class="img-fluid">
-                </div>
+    <section class="hero-section bg-light text-dark py-5 mb-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold">Học mọi lúc, mọi nơi</h1>
+                <p class="lead">Khám phá hàng ngàn khóa học chất lượng từ các giảng viên hàng đầu</p>
+                <a href="index.php?c=course&a=index" class="btn btn-primary btn-lg"> 
+                    <i class="fas fa-search"></i> Tìm khóa học ngay
+                </a>
             </div>
+           
         </div>
-    </section>
+    </div>
+</section>
 
     <!-- Search Section -->
     
@@ -42,7 +40,7 @@ if (!defined('BASE_URL')) {
                             <div class="card h-100 course-card shadow-sm">
                                 <!-- Course Image -->
                                 <div class="course-img-container">
-                                    <img src="<?= !empty($course['image']) ? BASE_URL . '/' . $course['image'] : BASE_URL . '/assets/img/default-course.jpg' ?>" 
+                                    <img src="<?= !empty($course['image']) ? BASE_URL . '/' . $course['image'] : BASE_URL . '/assets/img/default-courses.jpg' ?>" 
                                          class="card-img-top" 
                                          alt="<?= htmlspecialchars($course['title']) ?>">
                                     <?php if ($course['price'] == 0): ?>

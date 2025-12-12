@@ -69,35 +69,65 @@ class User {
     }
 
     // Đăng nhập
-    public function login($identifier, $password) {
-        try {
-            $sql = "SELECT * FROM users 
-                    WHERE (username = :id OR email = :id) 
-                    AND deleted_at IS NULL 
-                    LIMIT 1";
-                    
-            $stmt = $this->conn->prepare($sql);
-            $stmt->execute([':id' => trim($identifier)]);
-            $user = $stmt->fetch();
+   public function login($identifier, $password) {
+    try {
+        // Sửa lỗi HY093: Sử dụng hai placeholder khác nhau để liên kết hai lần
+        $sql = "SELECT * FROM users 
+                WHERE (username = :username OR email = :email) 
+                AND deleted_at IS NULL 
+                LIMIT 1";
+                
+        $stmt = $this->conn->prepare($sql);
+        
+        // Truyền giá trị cho cả hai placeholder
+        $stmt->execute([
+            ':username' => trim($identifier),
+            ':email' => trim($identifier)
+        ]);
+        
+        $user = $stmt->fetch();
 
-            if ($user && password_verify($password, $user['password'])) {
-                // Kiểm tra xem tài khoản có bị deactivated không
-                if (strpos($user['password'], 'DEACTIVATED_') === 0) {
-                    return ['success' => false, 'message' => 'Tài khoản đã bị vô hiệu hóa'];
-                }
-                return ['success' => true, 'user' => $user];
+        if ($user && password_verify($password, $user['password'])) {
+            // Kiểm tra xem tài khoản có bị deactivated không
+            if (strpos($user['password'], 'DEACTIVATED_') === 0) {
+                return ['success' => false, 'message' => 'Tài khoản đã bị vô hiệu hóa'];
             }
             
-            return ['success' => false, 'message' => 'Sai tên đăng nhập hoặc mật khẩu'];
+            // Chuyển đổi role INT thành string
+            $roleInt = $user['role'] ?? 0;
+            $roleString = $this->convertRoleToString($roleInt);
             
-        } catch (PDOException $e) {
-            return ['success' => false, 'message' => 'Lỗi hệ thống'];
+            // Chuyển role thành string trong user data
+            $user['role'] = $roleString; 
+            $user['role_int'] = $roleInt; 
+            
+            return ['success' => true, 'user' => $user];
         }
+        
+        return ['success' => false, 'message' => 'Sai tên đăng nhập hoặc mật khẩu'];
+        
+    } catch (PDOException $e) {
+        // Khi DEBUG xong, bạn nên chuyển về thông báo lỗi chung
+        return ['success' => false, 'message' => 'Lỗi hệ thống'];
+        // Hoặc dùng die("Lỗi: " . $e->getMessage()); nếu muốn debug chi tiết
     }
+}
+
+// **THÊM METHOD convertRoleToString() vào class User**
+private function convertRoleToString($roleInt)
+{
+    $roleInt = (int)$roleInt;
+    switch ($roleInt) {
+        case 0: return 'student';
+        case 1: return 'instructor';
+        case 2: return 'admin';
+        default: return 'student';
+    }
+}
 
     // Kiểm tra email
     public function emailExists($email) {
-        $sql = "SELECT id FROM users WHERE email = :email AND deleted_at IS NULL";
+        $sql = "SELECT id FROM users WHERE email = :email";
         $stmt = $this->conn->prepare($sql);
         $stmt->execute([':email' => $email]);
         return $stmt->fetch() ? true : false;
@@ -105,7 +135,7 @@ class User {
 
     // Kiểm tra username
     public function usernameExists($username) {
-        $sql = "SELECT id FROM users WHERE username = :u AND deleted_at IS NULL";
+        $sql = "SELECT id FROM users WHERE username = :u";
         $stmt = $this->conn->prepare($sql);
         $stmt->execute([':u' => $username]);
         return $stmt->fetch() ? true : false;

@@ -1,8 +1,6 @@
 <?php
 session_start();
-
-// Kiểm tra debug mode
-define('DEBUG', true); // Đặt thành false khi deploy lên production
+require_once 'config/constants.php';
 
 // Autoload models & controllers
 spl_autoload_register(function ($class) {
@@ -25,10 +23,7 @@ spl_autoload_register(function ($class) {
     }
 });
 
-// Lấy controller và action từ URL
-// Hỗ trợ cả 2 định dạng:
-// 1. ?controller=Home&action=index (cũ)
-// 2. ?c=home&a=index (mới - ngắn gọn hơn)
+
 $controllerName = $_GET['c'] ?? $_GET['controller'] ?? 'home';
 $actionName = $_GET['a'] ?? $_GET['action'] ?? 'index';
 
@@ -40,14 +35,7 @@ $controllerClass = ucfirst($controllerName) . 'Controller'; // Viết hoa chữ 
 // Đường dẫn đến file controller
 $controllerFile = "controllers/$controllerClass.php";
 
-if (DEBUG) {
-    echo "<!-- Debug Info: <br>";
-    echo "Controller Param: " . htmlspecialchars($controllerName) . "<br>";
-    echo "Action Param: " . htmlspecialchars($actionName) . "<br>";
-    echo "Controller Class: " . htmlspecialchars($controllerClass) . "<br>";
-    echo "Controller File: " . htmlspecialchars($controllerFile) . "<br>";
-    echo "-->";
-}
+
 
 // Kiểm tra file controller tồn tại
 if (!file_exists($controllerFile)) {

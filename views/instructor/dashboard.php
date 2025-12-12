@@ -1,5 +1,5 @@
 <?php 
-include __DIR__ . '/../../layouts/header.php';
+include __DIR__ . '/../layouts/header.php';
 ?>
 
 <div class="container">
@@ -80,5 +80,5 @@ include __DIR__ . '/../../layouts/header.php';
 </div>
 
 <?php 
-include __DIR__ . '/../../layouts/footer.php';
+include __DIR__ . '/../layouts/footer.php';
 ?>

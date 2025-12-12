@@ -8,7 +8,7 @@ include __DIR__ . '/../layouts/header.php';
     <!-- Thông tin khóa học -->
     <div class="course-header">
         <h2><?= htmlspecialchars($course['title']) ?></h2>
-        <p><?= htmlspecialchars($course['short_description']) ?></p>
+        <p><?= htmlspecialchars($course['description']) ?></p>
         <p><strong>Tiến độ:</strong> <?= $progress ?>%</p>
 
         <div class="progress-bar">

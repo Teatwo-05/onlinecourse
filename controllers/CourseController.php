@@ -99,43 +99,48 @@ class CourseController extends BaseController
      *  STUDENT: ENROLL COURSE
      * ================================
      */
-    public function enroll()
-    {
-        $this->require_login();
+   // Trong controllers/CourseController.php
 
-        $course_id = $_GET['id'] ?? 0;
-        $student_id = $_SESSION['user']['id'];
+public function enroll()
+{
+    $this->require_login();
 
-        if (!$course_id) {
-            $this->redirect('index.php?c=course&a=index');
-            return;
-        }
+    // SỬA LỖI TẠI ĐÂY: Chỉ lấy course_id từ $_GET
+    $course_id = intval($_GET['id'] ?? 0);
+    $student_id = $_SESSION['user']['id'];
 
-        // Kiểm tra khóa học tồn tại
-        $course = $this->courseModel->getCourseById($course_id);
-        if (!$course) {
-            $this->render404("Khóa học không tồn tại");
-            return;
-        }
-
-        // Kiểm tra đã đăng ký chưa
-        if ($this->enrollmentModel->isEnrolled($course_id, $student_id)) {
-            $_SESSION['error'] = "Bạn đã đăng ký khóa học này rồi";
-            $this->redirect("index.php?c=course&a=detail&id=$course_id");
-            return;
-        }
-
-        // Đăng ký
-        $result = $this->enrollmentModel->enroll($course_id, $student_id);
-        
-        if ($result['success']) {
-            $_SESSION['success'] = "Đăng ký khóa học thành công!";
-        } else {
-            $_SESSION['error'] = $result['message'];
-        }
-        
-        $this->redirect("index.php?c=course&a=detail&id=$course_id");
+    if (!$course_id) {
+        $_SESSION['error'] = "Không thể tìm thấy ID khóa học để đăng ký.";
+        $this->redirect('index.php?c=course&a=index');
+        return;
     }
+
+    // Kiểm tra khóa học tồn tại
+    $course = $this->courseModel->getCourseById($course_id);
+    if (!$course) {
+        $_SESSION['error'] = "Khóa học không tồn tại.";
+        $this->redirect('index.php?c=course&a=index');
+        return;
+    }
+
+    // Kiểm tra đã đăng ký chưa
+    if ($this->enrollmentModel->isEnrolled($course_id, $student_id)) {
+        $_SESSION['error'] = "Bạn đã đăng ký khóa học này rồi";
+        $this->redirect("index.php?c=course&a=detail&id=$course_id");
+        return;
+    }
+
+    // Đăng ký
+    $result = $this->enrollmentModel->enroll($course_id, $student_id);
+    
+    if ($result['success']) {
+        $_SESSION['success'] = "Đăng ký khóa học thành công!";
+    } else {
+        $_SESSION['error'] = $result['message'];
+    }
+    
+    $this->redirect("index.php?c=course&a=detail&id=$course_id");
+}
 
     /**
      * ================================

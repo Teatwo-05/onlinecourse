@@ -4,6 +4,7 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 if (!defined('BASE_URL')) {
+    // Đảm bảo đường dẫn này đúng
     require_once __DIR__ . '/../../config/constants.php';
 }
 ?>
@@ -14,24 +15,19 @@ if (!defined('BASE_URL')) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= isset($title) ? htmlspecialchars($title) . ' | ' . SITE_NAME : SITE_NAME ?></title>
     
-    <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Custom CSS -->
     <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/style.css">
     
-    <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="<?= BASE_URL ?>/assets/img/favicon.ico">
 </head>
 <body>
-    <!-- Navigation Bar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-lg sticky-top">
         <div class="container">
             <a class="navbar-brand" href="index.php?c=home&a=index">
-                <i class="fas fa-graduation-cap"></i> <?= SITE_NAME ?>
+                <i class="fas fa-graduation-cap text-primary"></i> <?= SITE_NAME ?>
             </a>
             
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -46,16 +42,20 @@ if (!defined('BASE_URL')) {
                     <li class="nav-item">
                         <a class="nav-link" href="index.php?c=course&a=index">Khóa học</a>
                     </li>
-                    <?php if (!empty($_SESSION['user'])): ?>
-                        <?php if ($_SESSION['user']['role'] === 'instructor'): ?>
+                    <?php if (!empty($_SESSION['user'])): 
+                        $role = $_SESSION['user']['role'] ?? '';
+                        // Nếu role là số (0, 1, 2) thì cần convert về string ('student', 'instructor', 'admin')
+                        // Giả định logic convert đã được xử lý trong Controller
+                        ?>
+                        <?php if ($role === 'instructor'): ?>
                             <li class="nav-item">
-                                <a class="nav-link" href="index.php?c=course&a=my_courses">Khóa học của tôi</a>
+                                <a class="nav-link" href="index.php?c=instructor&a=dashboard">Quản lý Khóa học</a>
                             </li>
-                        <?php elseif ($_SESSION['user']['role'] === 'student'): ?>
+                        <?php elseif ($role === 'student'): ?>
                             <li class="nav-item">
                                 <a class="nav-link" href="index.php?c=student&a=dashboard">Học tập</a>
                             </li>
-                        <?php elseif ($_SESSION['user']['role'] === 'admin'): ?>
+                        <?php elseif ($role === 'admin'): ?>
                             <li class="nav-item">
                                 <a class="nav-link" href="index.php?c=admin&a=dashboard">Quản trị</a>
                             </li>
@@ -76,11 +76,11 @@ if (!defined('BASE_URL')) {
                             </ul>
                         </li>
                     <?php else: ?>
-                        <li class="nav-item">
+                        <li class="nav-item me-2">
                             <a class="nav-link" href="index.php?c=auth&a=login">Đăng nhập</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="index.php?c=auth&a=register">Đăng ký</a>
+                            <a class="btn btn-primary btn-sm" href="index.php?c=auth&a=register">Đăng ký</a>
                         </li>
                     <?php endif; ?>
                 </ul>
@@ -88,9 +88,7 @@ if (!defined('BASE_URL')) {
         </div>
     </nav>
     
-    <!-- Main Content -->
     <div class="container mt-4">
-        <!-- Hiển thị thông báo flash -->
         <?php if (isset($_SESSION['success'])): ?>
             <div class="alert alert-success alert-dismissible fade show">
                 <?= htmlspecialchars($_SESSION['success']) ?>

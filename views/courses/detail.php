@@ -26,15 +26,14 @@
 
     <!-- Nút đăng ký -->
     <div class="enroll-box">
-        <?php if ($is_enrolled): ?>
-            <button class="btn disabled">Bạn đã đăng ký khóa học này</button>
-        <?php else: ?>
-            <form action="/enrollment/register" method="POST">
-                <input type="hidden" name="course_id" value="<?= $course['id'] ?>">
-                <button type="submit" class="btn btn-primary">Đăng ký khóa học</button>
-            </form>
-        <?php endif; ?>
-    </div>
+    <?php if ($is_enrolled): ?>
+        <button class="btn disabled">Bạn đã đăng ký khóa học này</button>
+    <?php else: ?>
+        <a href="index.php?c=course&a=enroll&id=<?= $course['id'] ?>" class="btn btn-primary">
+            Đăng ký khóa học
+        </a>
+    <?php endif; ?>
+</div>
 
     <hr>
 
