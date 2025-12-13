@@ -48,6 +48,7 @@ require_once __DIR__ . '/../../layouts/header.php';
                         </td>
                         <td><?= htmlspecialchars($user['created_at']) ?></td>
                         <td>
+                            
                             <?php if (empty($user['deleted_at'])): ?>
                                 <span class="badge badge-active">Hoạt động</span>
                             <?php else: ?>
@@ -60,9 +61,10 @@ require_once __DIR__ . '/../../layouts/header.php';
                             <?php if (empty($user['deleted_at'])): ?>
                                 <a href="index.php?c=admin&a=deactivateUser&id=<?= $user['id'] ?>" 
                                    class="btn-deactivate" 
-                                   onclick="return confirm('Vô hiệu hóa tài khoản này?');">
-                                   Vô hiệu hóa
+                                   onclick="return confirm('Xóa tài khoản này?');">
+                                   Chúa đã "BAN"
                                 </a>
+                            
                             <?php else: ?>
                                 <a href="index.php?c=admin&a=activateUser&id=<?= $user['id'] ?>" 
                                    class="btn-activate">

@@ -174,5 +174,76 @@ class AdminController
         header("Location: index.php?c=admin&a=pendingCourses");
         exit;
     }
+   public function editUser()
+{
+    $userId = $_GET['id'] ?? null;
+    if (!$userId) {
+        echo "User ID không hợp lệ";
+        return;
+    }
+
+    $userModel = new User(); // $this->conn là PDO
+    $error = '';
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        // Lấy dữ liệu từ form
+        $data = [
+            'id' => $userId,
+            'name' => $_POST['name'] ?? '',
+            'email' => $_POST['email'] ?? '',
+            'role' => $_POST['role'] ?? 'student'
+        ];
+
+        $id = $userModel->save($data);
+
+        if ($id) {
+            header("Location: index.php?controller=admin&action=manageUsers"); // quay về danh sách user
+            exit;
+        } else {
+            $error = "Cập nhật thất bại!";
+        }
+    }
+
+    // Lấy dữ liệu user hiện tại
+    $user = $userModel->getById($userId);
+
+    include __DIR__ . '/../views/admin/users/edit.php';
+}
+// AdminController.php
+public function deactivateUser($id = null) {
+    // Lấy id từ GET nếu chưa có
+    if ($id === null) {
+        $id = $_GET['id'] ?? null;
+    }
+    
+
+    if (!$id) {
+        echo "User ID không hợp lệ";
+        return;
+    }
+
+    $userModel = new User();
+
+    // Xóa hẳn user
+    try {
+        if ($userModel->deactivateUser($userId)) {
+            header("Location: index.php?c=admin&a=manageUsers&msg=deleted");
+            exit;
+        } else {
+            echo "Không thể xóa user này.";
+        }
+    } catch (PDOException $e) {
+        // Nếu lỗi ràng buộc khóa ngoại
+        if ($e->getCode() == '23000') {
+            // SQLSTATE 23000 = violation foreign key
+            echo "Không thể xóa user này vì có dữ liệu liên quan (ví dụ: khóa học hoặc enrollment).";
+        } else {
+            // Lỗi khác
+            echo "Lỗi hệ thống: " . $e->getMessage();
+        }
+    }
+
+}
+
 }
 ?>

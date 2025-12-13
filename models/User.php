@@ -243,6 +243,37 @@ private function convertRoleToString($roleInt)
         $stmt->execute();
         return $stmt->fetchAll();
     }
-   
+   // Lưu hoặc update user
+   public function save($data) {
+    if (!empty($data['id'])) {
+        // Update user
+        $sql = "UPDATE users SET fullname=:fullname, email=:email, role=:role WHERE id=:id";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute([
+            ':fullname' => $data['name'],  // bạn vẫn có thể dùng key 'name' từ form
+            ':email' => $data['email'],
+            ':role' => $data['role'],
+            ':id' => $data['id']
+        ]);
+        return $data['id'];
+    } else {
+        // Insert user mới
+        $sql = "INSERT INTO users (fullname,email,role) VALUES (:fullname,:email,:role)";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute([
+            ':fullname' => $data['name'],
+            ':email' => $data['email'],
+            ':role' => $data['role']
+        ]);
+        return $this->conn->lastInsertId();
+    }
+}
+public function deactivateUser($id) {
+    $sql = "DELETE FROM users WHERE id = :id";
+    $stmt = $this->conn->prepare($sql);
+    return $stmt->execute([':id' => $id]);
+}
+
+
 }
 ?>

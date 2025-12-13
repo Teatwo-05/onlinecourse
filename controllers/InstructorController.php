@@ -83,7 +83,7 @@ class InstructorController
     }
     
 
-    public function createCourse()
+    public function create()
     {
         $data = ['title' => 'Tạo Khóa học mới'];
     require_once 'views/instructor/lessons/create.php';

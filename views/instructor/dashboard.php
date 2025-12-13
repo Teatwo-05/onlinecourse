@@ -16,7 +16,7 @@ require_once __DIR__ . '/../layouts/header.php';
             <h3>📚 Quản lý khóa học</h3>
             <p>Tạo mới, chỉnh sửa hoặc xóa các khóa học bạn đang phụ trách.</p>
             <a href="index.php?c=instructor&a=myCourses" class="btn-primary">Xem khóa học của tôi</a>
-            <a href="index.php?c=instructor&a=createCourse" class="btn-secondary">+ Tạo khóa học mới</a>
+            <a href="index.php?c=instructor&a=create" class="btn-secondary">+ Tạo khóa học mới</a>
         </div>
 
         <!-- Quản lý bài học -->
