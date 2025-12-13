@@ -106,8 +106,11 @@ class CourseController extends BaseController
 
 public function enroll()
 {
-    $this->require_login();
-
+if (empty($_SESSION['user'])) {
+        $_SESSION['error'] = "Vui lòng đăng nhập để đăng ký khóa học.";
+        header("Location: index.php?c=auth&a=login");
+        exit;
+    }
     // SỬA LỖI TẠI ĐÂY: Chỉ lấy course_id từ $_GET
     $course_id = intval($_GET['id'] ?? 0);
     $student_id = $_SESSION['user']['id'];
@@ -371,4 +374,6 @@ public function enroll()
 
         $this->redirect("index.php?c=course&a=my_courses");
     }
+
+
 }

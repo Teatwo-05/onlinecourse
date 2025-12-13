@@ -1,6 +1,5 @@
 <?php 
 // views/layouts/footer.php 
-// Đảm bảo thẻ đóng của nội dung chính (ví dụ: <div class="main-content"> hoặc <main>) được đặt ngay trên thẻ footer.
 ?>
 
         </div> <footer class="footer mt-auto py-4 bg-light border-top">
@@ -14,7 +13,7 @@
                 <div class="col-md-6 text-center text-md-end">
                     <a href="<?= BASE_URL ?>/index.php?c=home&a=index" class="text-muted text-decoration-none mx-2 small">Trang chủ</a>
                     <span class="text-muted">|</span>
-                    <a href="<?= BASE_URL ?>/index.php?c=home&a=courses" class="text-muted text-decoration-none mx-2 small">Khóa học</a>
+                    <a href="#" class="text-muted text-decoration-none mx-2 small">Hợp tác</a>
                     <span class="text-muted">|</span>
                     <a href="#" class="text-muted text-decoration-none mx-2 small">Liên hệ</a>
                 </div>

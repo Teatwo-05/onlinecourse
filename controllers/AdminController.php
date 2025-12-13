@@ -5,11 +5,7 @@ class AdminController
     // Cần bổ sung các phương thức cơ bản
     public function dashboard()
     {
-        $data = [
-            'title' => 'Dashboard ADMIN',
-            'user' => $_SESSION['user']
-        ];
-        
+       
         // Có thể lấy thêm dữ liệu từ model nếu cần
         require_once 'views/admin/dashboard.php';
     }
@@ -121,6 +117,62 @@ class AdminController
         
         $_SESSION['success'] = "Xóa danh mục thành công!";
         $this->redirect("Admin", "categories");
+    }
+    //admin lấy all users
+     public function manageUsers()
+    {
+        if (empty($_SESSION['user']) || $_SESSION['user']['role'] !== 'admin') {
+            header("Location: index.php?c=auth&a=login");
+            exit;
+        }
+
+        $userModel = new User();
+        $users = $userModel->getAllUsers(); // bạn cần có hàm này trong models/User.php
+
+        require_once 'views/admin/users/manage.php';
+    }
+
+
+    // Duyệt khóa học
+    public function approveCourse()
+    {
+        if (empty($_SESSION['user']) || $_SESSION['user']['role'] !== 'admin') {
+            header("Location: index.php?c=auth&a=login");
+            exit;
+        }
+
+        $id = $_GET['id'] ?? 0;
+
+        $courseModel = new Course();
+        if ($courseModel->updateStatus($id, 'approved')) {
+            $_SESSION['success'] = "Khóa học đã được duyệt.";
+        } else {
+            $_SESSION['error'] = "Không thể duyệt khóa học.";
+        }
+
+        header("Location: index.php?c=admin&a=pendingCourses");
+        exit;
+    }
+
+    // Từ chối khóa học
+    public function rejectCourse()
+    {
+        if (empty($_SESSION['user']) || $_SESSION['user']['role'] !== 'admin') {
+            header("Location: index.php?c=auth&a=login");
+            exit;
+        }
+
+        $id = $_GET['id'] ?? 0;
+
+        $courseModel = new Course();
+        if ($courseModel->updateStatus($id, 'rejected')) {
+            $_SESSION['success'] = "Khóa học đã bị từ chối.";
+        } else {
+            $_SESSION['error'] = "Không thể từ chối khóa học.";
+        }
+
+        header("Location: index.php?c=admin&a=pendingCourses");
+        exit;
     }
 }
 ?>

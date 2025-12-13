@@ -1,19 +1,26 @@
 <?php
 class StudentController
 {
+    
     public function __construct()
     {
         // Khởi động session nếu chưa có
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
+       
+            require_once 'models/Enrollment.php';  // 🔹 nạp model
+
+        $this->enrollmentModel = new Enrollment(); // 🔹 khởi tạo model
+        
         
         // Kiểm tra đăng nhập và quyền student
         $this->checkAuth();
     require_once 'models/Course.php';
     require_once 'models/Lesson.php';
     $this->courseModel = new Course();
-    $this->lessonModel = new Lesson();}
+    $this->lessonModel = new Lesson();
+}
+    private $enrollmentModel;
+
+
     
 // Trong StudentController.php
 
@@ -57,7 +64,11 @@ class StudentController
      */
     public function my_courses()
     {
+        
         // TODO: Lấy danh sách khóa học từ model
+        $student_id = $_SESSION['user']['id'];
+
+        $my_courses = $this->enrollmentModel->getEnrolledCoursesByStudent($student_id);
         $data = [
             'title' => 'Khóa học của tôi',
             'user' => $_SESSION['user'],
@@ -130,5 +141,6 @@ public function course_progress()
         header("Location: index.php?c=student&a=dashboard");
         exit;
     }
+    
 }
 ?>

@@ -4,7 +4,21 @@ class BaseController
 {
     public function __construct()
     {
-        // Có thể thêm code khởi tạo chung ở đây nếu cần
+       // Khởi tạo Models
+        require_once 'models/User.php'; // Cần User Model để kiểm tra role
+        require_once 'models/Course.php';
+        require_once 'models/Lesson.php';
+        require_once 'models/Material.php';
+        require_once 'models/Enrollment.php';
+
+        $this->userModel = new User();
+        $this->courseModel = new Course();
+        $this->lessonModel = new Lesson();
+        $this->materialModel = new Material();
+        $this->enrollmentModel = new Enrollment();
+
+        // Kiểm tra quyền truy cập
+        $this->checkAuth(); // Có thể thêm code khởi tạo chung ở đây nếu cần
     }
     protected function view($viewPath, $data = [])
     {

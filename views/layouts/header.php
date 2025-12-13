@@ -62,7 +62,6 @@
                                 <i class="fas fa-user"></i> <?= htmlspecialchars($_SESSION['user']['fullname'] ?? $_SESSION['user']['username']) ?>
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="index.php?c=auth&a=profile">Hồ sơ</a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item" href="index.php?c=auth&a=logout">Đăng xuất</a></li>
                             </ul>

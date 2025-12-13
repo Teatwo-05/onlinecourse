@@ -56,7 +56,6 @@ $this->conn = $db->getConnection();
                 FROM {$this->table} m  
                 JOIN lessons l ON m.lesson_id = l.id
                 WHERE l.course_id = :courseId 
-                AND m.deleted_at IS NULL
                 ORDER BY l.lesson_order, m.id"; // Sắp xếp theo thứ tự bài học
 
         $stmt = $this->conn->prepare($sql);

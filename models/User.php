@@ -75,7 +75,6 @@ class User {
         // Sửa lỗi HY093: Sử dụng hai placeholder khác nhau để liên kết hai lần
         $sql = "SELECT * FROM users 
                 WHERE (username = :username OR email = :email) 
-                AND deleted_at IS NULL 
                 LIMIT 1";
                 
         $stmt = $this->conn->prepare($sql);
@@ -90,9 +89,7 @@ class User {
 
         if ($user && password_verify($password, $user['password'])) {
             // Kiểm tra xem tài khoản có bị deactivated không
-            if (strpos($user['password'], 'DEACTIVATED_') === 0) {
-                return ['success' => false, 'message' => 'Tài khoản đã bị vô hiệu hóa'];
-            }
+
             
             // Chuyển đổi role INT thành string
             $roleInt = $user['role'] ?? 0;
@@ -146,33 +143,20 @@ private function convertRoleToString($roleInt)
     public function getById($id) {
         $sql = "SELECT id, username, email, fullname, role, created_at 
                 FROM users 
-                WHERE id = :id AND deleted_at IS NULL";
+                WHERE id = :id";
         $stmt = $this->conn->prepare($sql);
         $stmt->execute([':id' => $id]);
         return $stmt->fetch();
     }
 
     // Lấy tất cả users (cho Admin) - KHÔNG hiển thị mật khẩu
-    public function getAll($limit = 50, $offset = 0) {
-        $sql = "SELECT id, username, email, fullname, role, created_at 
-                FROM users 
-                WHERE deleted_at IS NULL 
-                ORDER BY created_at DESC 
-                LIMIT :limit OFFSET :offset";
-                
-        $stmt = $this->conn->prepare($sql);
-        $stmt->bindValue(':limit', (int)$limit, PDO::PARAM_INT);
-        $stmt->bindValue(':offset', (int)$offset, PDO::PARAM_INT);
-        $stmt->execute();
-        
-        return $stmt->fetchAll();
-    }
+   
 
     // Cập nhật thông tin user
     public function updateProfile($id, $fullname, $email) {
         try {
             // Kiểm tra email mới có trùng với người khác không
-            $checkSql = "SELECT id FROM users WHERE email = :email AND id != :id AND deleted_at IS NULL";
+            $checkSql = "SELECT id FROM users WHERE email = :email AND id != :id";
             $checkStmt = $this->conn->prepare($checkSql);
             $checkStmt->execute([':email' => $email, ':id' => $id]);
             
@@ -181,8 +165,8 @@ private function convertRoleToString($roleInt)
             }
             
             $sql = "UPDATE users 
-                    SET fullname = :fullname, email = :email, updated_at = NOW() 
-                    WHERE id = :id AND deleted_at IS NULL";
+                    SET fullname = :fullname, email = :email
+                    WHERE id = :id";
                     
             $stmt = $this->conn->prepare($sql);
             $result = $stmt->execute([
@@ -205,7 +189,7 @@ private function convertRoleToString($roleInt)
             return false;
         }
         
-        $sql = "UPDATE users SET role = :role WHERE id = :id AND deleted_at IS NULL";
+        $sql = "UPDATE users SET role = :role WHERE id = :id ";
         $stmt = $this->conn->prepare($sql);
         return $stmt->execute([
             ':role' => $role,
@@ -214,16 +198,11 @@ private function convertRoleToString($roleInt)
     }
 
     // Soft delete user (Admin function)
-    public function delete($id) {
-        // Không xóa thật, chỉ đánh dấu deleted_at
-        $sql = "UPDATE users SET deleted_at = NOW() WHERE id = :id";
-        $stmt = $this->conn->prepare($sql);
-        return $stmt->execute([':id' => $id]);
-    }
+    
 
     // Đếm tổng số user (cho phân trang)
     public function countAll() {
-        $sql = "SELECT COUNT(*) as total FROM users WHERE deleted_at IS NULL";
+        $sql = "SELECT COUNT(*) as total FROM users";
         $stmt = $this->conn->query($sql);
         return $stmt->fetch()['total'];
     }
@@ -232,7 +211,7 @@ private function convertRoleToString($roleInt)
     public function getByEmail($email) {
         $sql = "SELECT id, username, email, fullname, role, created_at 
                 FROM users 
-                WHERE email = :email AND deleted_at IS NULL 
+                WHERE email = :email
                 LIMIT 1";
         $stmt = $this->conn->prepare($sql);
         $stmt->execute([':email' => $email]);
@@ -245,12 +224,25 @@ private function convertRoleToString($roleInt)
             return false;
         }
         
-        $sql = "UPDATE users SET password = :password WHERE id = :id AND deleted_at IS NULL";
+        $sql = "UPDATE users SET password = :password WHERE id = :id";
         $stmt = $this->conn->prepare($sql);
         return $stmt->execute([
             ':password' => password_hash($newPassword, PASSWORD_DEFAULT),
             ':id' => $id
         ]);
     }
+    // Lấy tất cả users (cho Admin) - KHÔNG hiển thị mật khẩu
+    public function getAllUsers($limit = 20, $offset = 0) {
+        $sql = "SELECT id, username, email, fullname, role, created_at 
+                FROM users 
+                ORDER BY created_at DESC
+                LIMIT :limit OFFSET :offset";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindValue(':limit', (int)$limit, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', (int)$offset, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+   
 }
 ?>

@@ -47,7 +47,7 @@ public function enroll($courseId, $studentId)
 {
     
     try {
-        $sql = "INSERT INTO enrollments (course_id, student_id, enrolled_at) 
+        $sql = "INSERT INTO enrollments (course_id, student_id, enrolled_date) 
                 VALUES (:courseId, :studentId, NOW())";
         
         $stmt = $this->conn->prepare($sql);
@@ -220,5 +220,20 @@ public function countStudentsByInstructor($instructor_id)
     // Trả về số lượng
     return $stmt->fetch()['total_students'] ?? 0;
 }
+// models/Enrollment.php
+public function getEnrolledCoursesByStudent($student_id)
+{
+    $sql = "SELECT c.*
+            FROM enrollments e
+            INNER JOIN courses c ON e.course_id = c.id
+            WHERE e.student_id = :student_id";
+    
+    $stmt = $this->conn->prepare($sql);
+    $stmt->bindParam(':student_id', $student_id, PDO::PARAM_INT);
+    $stmt->execute();
+    
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
 }
 ?>

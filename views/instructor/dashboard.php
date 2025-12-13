@@ -1,84 +1,53 @@
-<?php 
-include __DIR__ . '/../layouts/header.php';
+<?php
+require_once __DIR__ . '/../layouts/header.php';
 ?>
 
-<div class="container">
+<div class="instructor-dashboard">
+    <h1>🎓 Bảng điều khiển Giảng viên</h1>
+    <p class="welcome-text">
+        Xin chào, <strong><?= htmlspecialchars($_SESSION['user']['fullname'] ?? 'Giảng viên') ?></strong>!  
+        Chúc bạn có một ngày làm việc hiệu quả 💪
+    </p>
 
-    <h1>Trang quản lý giảng viên</h1>
+    <div class="dashboard-grid">
 
-    <p>Xin chào, <strong><?= htmlspecialchars($instructor['name'] ?? '') ?></strong></p>
-
-    <!-- Thống kê nhanh -->
-    <div class="stats-box">
-        <div class="stat-item">
-            <h3><?= $total_courses ?? 0 ?></h3>
-            <p>Khóa học đã tạo</p>
+        <!-- Quản lý khóa học -->
+        <div class="dashboard-card">
+            <h3>📚 Quản lý khóa học</h3>
+            <p>Tạo mới, chỉnh sửa hoặc xóa các khóa học bạn đang phụ trách.</p>
+            <a href="index.php?c=instructor&a=myCourses" class="btn-primary">Xem khóa học của tôi</a>
+            <a href="index.php?c=instructor&a=createCourse" class="btn-secondary">+ Tạo khóa học mới</a>
         </div>
 
-        <div class="stat-item">
-            <h3><?= $total_students ?? 0 ?></h3>
-            <p>Tổng học viên</p>
+        <!-- Quản lý bài học -->
+        <div class="dashboard-card">
+            <h3>🧩 Quản lý bài học</h3>
+            <p>Thêm, chỉnh sửa nội dung bài học và cấu trúc chương trình giảng dạy.</p>
+            <a href="index.php?c=lesson&a=manage&course_id=<?= $course['id'] ?>" class="btn-primary">Quản lý bài học</a>
         </div>
+
+        <!-- Đăng tải tài liệu -->
+        <div class="dashboard-card">
+            <h3>📁 Tài liệu học tập</h3>
+            <p>Đăng tải và quản lý các tài liệu học tập dành cho học viên.</p>
+            <a href="index.php?c=material&a=upload" class="btn-primary">Tải tài liệu lên</a>
+        </div>
+
+        <!-- Danh sách học viên -->
+        <div class="dashboard-card">
+            <h3>👨‍🎓 Học viên của tôi</h3>
+            <p>Xem danh sách học viên đã đăng ký vào các khóa học của bạn.</p>
+            <a href="index.php?c=instructor&a=students" class="btn-primary">Xem học viên</a>
+        </div>
+
+        <!-- Theo dõi tiến độ -->
+        <div class="dashboard-card">
+            <h3>📊 Tiến độ học tập</h3>
+            <p>Theo dõi tiến độ và hiệu suất học tập của từng học viên.</p>
+            <a href="index.php?c=instructor&a=progress" class="btn-primary">Theo dõi tiến độ</a>
+        </div>
+
     </div>
-
-    <hr>
-
-    <!-- Danh sách khóa học gần đây -->
-    <h2>Khoá học gần đây</h2>
-
-    <div class="course-list">
-        <?php if (!empty($recent_courses)): ?>
-            <?php foreach ($recent_courses as $course): ?>
-                <div class="course-item">
-
-                    <h3>
-                        <a href="/instructor/course/manage?id=<?= $course['id'] ?>">
-                            <?= htmlspecialchars($course['title']) ?>
-                        </a>
-                    </h3>
-
-                    <p><?= htmlspecialchars($course['short_description']) ?></p>
-
-                    <a class="btn" href="/instructor/course/edit?id=<?= $course['id'] ?>">Sửa</a>
-                    <a class="btn" href="/instructor/lessons/manage?course_id=<?= $course['id'] ?>">Quản lý bài học</a>
-
-                </div>
-            <?php endforeach; ?>
-        <?php else: ?>
-            <p>Chưa có khóa học nào.</p>
-        <?php endif; ?>
-    </div>
-
-    <hr>
-
-    <!-- Học viên đăng ký gần đây -->
-    <h2>Học viên mới đăng ký</h2>
-
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Tên học viên</th>
-                <th>Khóa học</th>
-                <th>Ngày đăng ký</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php if (!empty($recent_students)): ?>
-                <?php foreach ($recent_students as $student): ?>
-                    <tr>
-                        <td><?= htmlspecialchars($student['student_name']) ?></td>
-                        <td><?= htmlspecialchars($student['course_title']) ?></td>
-                        <td><?= htmlspecialchars($student['enrolled_at']) ?></td>
-                    </tr>
-                <?php endforeach; ?>
-            <?php else: ?>
-                <tr><td colspan="3">Chưa có học viên nào đăng ký gần đây.</td></tr>
-            <?php endif; ?>
-        </tbody>
-    </table>
-
 </div>
 
-<?php 
-include __DIR__ . '/../layouts/footer.php';
-?>
+<?php require_once __DIR__ . '/../layouts/footer.php'; ?>

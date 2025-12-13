@@ -42,11 +42,6 @@ class AuthController
         require_once 'views/auth/login.php';
     }
 
-    /**
-     * ============================
-     *  POST: /auth/handleLogin
-     * ============================
-     */
     public function handleLogin()
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -87,8 +82,7 @@ class AuthController
             'fullname' => $result['user']['fullname'],
             'role' => $result['user']['role']
         ];
-		echo "Session saved. Role: " . $_SESSION['user']['role'] . "<br>";
-echo "Redirecting to Dashboard...";
+
         $this->redirectToDashboard();
     }
 

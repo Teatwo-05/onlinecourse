@@ -1,103 +1,66 @@
-<?php 
-include __DIR__ . '/../layouts/header.php';
+<?php
+// views/admin/dashboard.php
+require_once __DIR__ . '/../layouts/header.php';
 ?>
 
-<div class="container">
+<div class="admin-dashboard">
+    <h1 class="page-title">Bảng điều khiển quản trị</h1>
+    <p class="subtitle">Xin chào, <?= htmlspecialchars($_SESSION['user']['fullname'] ?? 'Quản trị viên') ?>!</p>
 
-    <h1>Bảng điều khiển quản trị</h1>
-
-    <!-- Tổng quan thống kê -->
-    <div class="stats-grid">
-
-        <div class="stat-box">
-            <h3>Tổng số người dùng</h3>
-            <p><?= htmlspecialchars($stats['total_users'] ?? 0) ?></p>
+    <!-- Thống kê tổng quan -->
+    <section class="stats-overview">
+        <div class="stat-card">
+            <h3>👥 Người dùng</h3>
+            <a href="index.php?c=admin&a=manageUsers" class="btn-view">Xem chi tiết</a>
         </div>
 
-        <div class="stat-box">
-            <h3>Tổng số khoá học</h3>
-            <p><?= htmlspecialchars($stats['total_courses'] ?? 0) ?></p>
+        <div class="stat-card">
+            <h3>🏷️ Danh mục</h3>
+            <a href="index.php?c=admin&a=manageCategories" class="btn-view">Quản lý danh mục</a>
         </div>
 
-        <div class="stat-box">
-            <h3>Khoá học đang chờ duyệt</h3>
-            <p><?= htmlspecialchars($stats['pending_courses'] ?? 0) ?></p>
+        <div class="stat-card">
+            <h3>📊 Báo cáo</h3>
+            <a href="index.php?c=admin&a=statistics" class="btn-view">Xem thống kê</a>
         </div>
+    </section>
 
-        <div class="stat-box">
-            <h3>Người dùng mới trong tháng</h3>
-            <p><?= htmlspecialchars($stats['new_users_month'] ?? 0) ?></p>
-        </div>
+    <!-- Danh sách khóa học chờ duyệt -->
+    <section class="pending-courses">
+        <h2>📋 Khóa học chờ phê duyệt</h2>
 
-    </div>
-
-
-    <hr>
-
-    <!-- Danh sách khoá học chờ phê duyệt -->
-    <h2>Khoá học chờ phê duyệt</h2>
-
-    <?php if (!empty($pending_courses)): ?>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Tên khoá học</th>
-                    <th>Giảng viên</th>
-                    <th>Ngày tạo</th>
-                    <th>Thao tác</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($pending_courses as $course): ?>
+        <?php if (!empty($pendingCourses)): ?>
+            <table class="data-table">
+                <thead>
                     <tr>
-                        <td><?= htmlspecialchars($course['title']) ?></td>
-                        <td><?= htmlspecialchars($course['instructor_name']) ?></td>
-                        <td><?= htmlspecialchars($course['created_at']) ?></td>
-                        <td>
-                            <a href="/admin/courses/approve?id=<?= $course['id'] ?>" class="btn">Duyệt</a>
-                            <a href="/admin/courses/reject?id=<?= $course['id'] ?>" class="btn btn-danger">Từ chối</a>
-                        </td>
+                        <th>Tên khóa học</th>
+                        <th>Giảng viên</th>
+                        <th>Ngày tạo</th>
+                        <th>Trạng thái</th>
+                        <th>Hành động</th>
                     </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    <?php foreach ($pendingCourses as $course): ?>
+                        <tr>
+                            <td><?= htmlspecialchars($course['title']) ?></td>
+                            <td><?= htmlspecialchars($course['instructor_name']) ?></td>
+                            <td><?= htmlspecialchars($course['created_at']) ?></td>
+                            <td><span class="badge badge-warning">Chờ duyệt</span></td>
+                            <td>
+                                <a href="index.php?c=admin&a=approveCourse&id=<?= $course['id'] ?>" class="btn-approve">Phê duyệt</a>
+                                <a href="index.php?c=admin&a=rejectCourse&id=<?= $course['id'] ?>" class="btn-reject">Từ chối</a>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        <?php else: ?>
+            <p>Không có khóa học nào đang chờ phê duyệt.</p>
+        <?php endif; ?>
+    </section>
 
-    <?php else: ?>
-        <p>Không có khoá học nào đang chờ phê duyệt.</p>
-    <?php endif; ?>
-
-
-    <hr>
-
-    <!-- Danh sách người dùng mới -->
-    <h2>Người dùng mới nhất</h2>
-
-    <?php if (!empty($recent_users)): ?>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Tên</th>
-                    <th>Email</th>
-                    <th>Ngày tham gia</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($recent_users as $user): ?>
-                    <tr>
-                        <td><?= htmlspecialchars($user['name']) ?></td>
-                        <td><?= htmlspecialchars($user['email']) ?></td>
-                        <td><?= htmlspecialchars($user['created_at']) ?></td>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
-
-    <?php else: ?>
-        <p>Chưa có người dùng mới.</p>
-    <?php endif; ?>
-
+    
 </div>
 
-<?php 
-include __DIR__ . '/../layouts/footer.php';
-?>
+<?php require_once __DIR__ . '/../layouts/footer.php'; ?>

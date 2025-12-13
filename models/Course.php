@@ -37,17 +37,27 @@ class Course
         TÌM KIẾM KHÓA HỌC
     =================================*/
     public function searchCourses($keyword)
-    {
+{
+    try {
         $sql = "SELECT * FROM courses 
-                WHERE title LIKE :keyword OR description LIKE :keyword
-                ORDER BY created_at DESC";
+                WHERE (title LIKE :kw1 OR description LIKE :kw2)
+                "; // nếu có cột này, thêm vào để tránh hiển thị đã xóa
 
         $stmt = $this->conn->prepare($sql);
-        $stmt->bindValue(":keyword", "%$keyword%");
-        $stmt->execute();
+        $stmt->execute([
+            ':kw1' => "%$keyword%",
+            ':kw2' => "%$keyword%"
+        ]);
 
-        return $stmt->fetchAll();
+        // ✅ Lấy tất cả kết quả
+        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        return $results; // ⚠️ Quan trọng!
+    } catch (PDOException $e) {
+        die("Error in searchCourses(): " . $e->getMessage());
     }
+}
+
 
     /* ===============================
         LỌC KHÓA HỌC THEO DANH MỤC
