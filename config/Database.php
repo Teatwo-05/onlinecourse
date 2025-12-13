@@ -3,7 +3,7 @@
 class Database {
     private static $instance = null;
     private $host = "localhost";
-    private $db = "onlinecourses";   
+    private $db = "onlinecourse";   
     private $user = "root";
     private $pass = "";
     private $conn;

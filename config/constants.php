@@ -16,7 +16,7 @@ define('SITE_NAME', 'Online Course');
 define('DB_HOST', 'localhost');
 define('DB_USER', 'root');      // Tên đăng nhập MySQL (thường là root)
 define('DB_PASS', '');          // Mật khẩu MySQL (thường để trống trên XAMPP)
-define('DB_NAME', 'onlinecourses'); // Tên Database của bạn (hãy kiểm tra lại chính xác tên trong phpMyAdmin)
+define('DB_NAME', 'onlinecourse'); // Tên Database của bạn (hãy kiểm tra lại chính xác tên trong phpMyAdmin)
 define('DB_CHARSET', 'utf8mb4');
 // =============================================
 
