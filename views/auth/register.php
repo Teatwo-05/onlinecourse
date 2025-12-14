@@ -1,25 +1,15 @@
 <?php
-// views/auth/register.php
-
-// Khởi tạo constants nếu chưa có
 if (!defined('BASE_URL')) {
     require_once __DIR__ . '/../../config/constants.php';
 }
-
-// Lấy thông báo lỗi và thành công từ session
 $errors = $_SESSION['errors'] ?? [];
 $success = $_SESSION['success'] ?? null;
-$old = $_SESSION['old'] ?? []; // Lưu lại giá trị cũ để hiển thị lại
-
-// Clear session messages (sẽ hiển thị một lần)
+$old = $_SESSION['old'] ?? [];
 unset($_SESSION['errors']);
 unset($_SESSION['success']);
 unset($_SESSION['old']);
-
-// Include header
 include __DIR__ . '/../layouts/header.php';
 ?>
-
 <div class="auth-page">
     <div class="container">
         <div class="row justify-content-center">
@@ -28,17 +18,13 @@ include __DIR__ . '/../layouts/header.php';
                     <div class="card-header bg-primary text-white text-center py-3">
                         <h3 class="mb-0"><i class="fas fa-user-plus"></i> Đăng ký tài khoản</h3>
                     </div>
-                    
                     <div class="card-body p-4">
-                        <!-- Success Message -->
                         <?php if (!empty($success)): ?>
                             <div class="alert alert-success alert-dismissible fade show">
                                 <?= htmlspecialchars($success) ?>
                                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                             </div>
                         <?php endif; ?>
-                        
-                        <!-- Error Messages -->
                         <?php if (!empty($errors)): ?>
                             <div class="alert alert-danger alert-dismissible fade show">
                                 <h5 class="alert-heading"><i class="fas fa-exclamation-triangle"></i> Vui lòng sửa các lỗi sau:</h5>
@@ -50,11 +36,8 @@ include __DIR__ . '/../layouts/header.php';
                                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                             </div>
                         <?php endif; ?>
-                        
                         <form action="index.php?c=auth&a=handleRegister" method="post" class="needs-validation" novalidate>
                             <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '') ?>">
-                            
-                            <!-- Full Name -->
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="fullname" class="form-label">
@@ -73,8 +56,6 @@ include __DIR__ . '/../layouts/header.php';
                                         </div>
                                     <?php endif; ?>
                                 </div>
-                                
-                                <!-- Username -->
                                 <div class="col-md-6 mb-3">
                                     <label for="username" class="form-label">
                                         <i class="fas fa-at"></i> Tên đăng nhập <span class="text-danger">*</span>
@@ -99,8 +80,6 @@ include __DIR__ . '/../layouts/header.php';
                                     <?php endif; ?>
                                 </div>
                             </div>
-                            
-                            <!-- Email -->
                             <div class="mb-3">
                                 <label for="email" class="form-label">
                                     <i class="fas fa-envelope"></i> Email <span class="text-danger">*</span>
@@ -118,8 +97,6 @@ include __DIR__ . '/../layouts/header.php';
                                     </div>
                                 <?php endif; ?>
                             </div>
-                            
-                            <!-- Password -->
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="password" class="form-label">
@@ -144,8 +121,6 @@ include __DIR__ . '/../layouts/header.php';
                                         </div>
                                     <?php endif; ?>
                                 </div>
-                                
-                                <!-- Confirm Password -->
                                 <div class="col-md-6 mb-3">
                                     <label for="confirm_password" class="form-label">
                                         <i class="fas fa-lock"></i> Xác nhận mật khẩu <span class="text-danger">*</span>
@@ -169,8 +144,6 @@ include __DIR__ . '/../layouts/header.php';
                                     <?php endif; ?>
                                 </div>
                             </div>
-                            
-                            <!-- Role Selection -->
                             <div class="mb-4">
                                 <label for="role" class="form-label">
                                     <i class="fas fa-user-tag"></i> Vai trò <span class="text-danger">*</span>
@@ -227,8 +200,6 @@ include __DIR__ . '/../layouts/header.php';
                                     </div>
                                 <?php endif; ?>
                             </div>
-                            
-                            <!-- Terms and Conditions -->
                             <div class="mb-4 form-check">
                                 <input type="checkbox" 
                                        class="form-check-input <?= isset($errors['terms']) ? 'is-invalid' : '' ?>" 
@@ -245,15 +216,11 @@ include __DIR__ . '/../layouts/header.php';
                                     </div>
                                 <?php endif; ?>
                             </div>
-                            
-                            <!-- Submit Button -->
                             <div class="d-grid mb-3">
                                 <button type="submit" class="btn btn-primary btn-lg">
                                     <i class="fas fa-user-plus"></i> Đăng ký tài khoản
                                 </button>
                             </div>
-                            
-                            <!-- Login Link -->
                             <div class="text-center">
                                 <p class="mb-0">
                                     Đã có tài khoản? 
@@ -265,8 +232,6 @@ include __DIR__ . '/../layouts/header.php';
                         </form>
                     </div>
                 </div>
-                
-                <!-- Additional Info -->
                 <div class="mt-4 text-center">
                     <div class="row">
                         <div class="col-md-4 mb-3">
@@ -302,10 +267,7 @@ include __DIR__ . '/../layouts/header.php';
         </div>
     </div>
 </div>
-
-<!-- JavaScript for form validation and password toggle -->
 <script>
-// Toggle password visibility
 function togglePassword(inputId, buttonId) {
     const button = document.getElementById(buttonId);
     button.addEventListener('click', function() {
@@ -323,12 +285,8 @@ function togglePassword(inputId, buttonId) {
         }
     });
 }
-
-// Initialize toggles
 togglePassword('password', 'togglePassword1');
 togglePassword('confirm_password', 'togglePassword2');
-
-// Form validation
 (function() {
     'use strict';
     var forms = document.querySelectorAll('.needs-validation');
@@ -342,8 +300,6 @@ togglePassword('confirm_password', 'togglePassword2');
         }, false);
     });
 })();
-
-// Real-time password match check
 document.getElementById('confirm_password').addEventListener('input', function() {
     const password = document.getElementById('password').value;
     const confirmPassword = this.value;
@@ -365,8 +321,6 @@ document.getElementById('confirm_password').addEventListener('input', function()
         }
     }
 });
-
-// Username format validation
 document.getElementById('username').addEventListener('input', function() {
     const username = this.value;
     const regex = /^[a-zA-Z0-9_]{3,30}$/;
@@ -380,6 +334,5 @@ document.getElementById('username').addEventListener('input', function() {
 </script>
 
 <?php
-// Include footer
 include __DIR__ . '/../layouts/footer.php';
 ?>

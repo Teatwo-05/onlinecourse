@@ -1,16 +1,11 @@
 <?php
-// views/auth/login.php
 if (!defined('BASE_URL')) {
     require_once __DIR__ . '/../../config/constants.php';
 }
-
 $error = $_SESSION['error'] ?? null;
 $success = $_SESSION['success'] ?? null;
-
-// Include header
 include __DIR__ . '/../layouts/header.php';
 ?>
-
 <div class="auth-page">
     <div class="container">
         <div class="row justify-content-center">
@@ -21,15 +16,12 @@ include __DIR__ . '/../layouts/header.php';
                     </div>
                     
                     <div class="card-body p-4">
-                        <!-- Success Message -->
                         <?php if (!empty($success)): ?>
                             <div class="alert alert-success alert-dismissible fade show">
                                 <?= htmlspecialchars($success) ?>
                                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                             </div>
                         <?php endif; ?>
-                        
-                        <!-- Error Message -->
                         <?php if (!empty($error)): ?>
                             <div class="alert alert-danger alert-dismissible fade show">
                                 <?= htmlspecialchars($error) ?>
@@ -39,8 +31,6 @@ include __DIR__ . '/../layouts/header.php';
                         
                         <form action="index.php?c=auth&a=handleLogin" method="post">
                             <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '') ?>">
-                            
-                            <!-- Username/Email -->
                             <div class="mb-3">
                                 <label for="identifier" class="form-label">
                                     <i class="fas fa-user"></i> Email hoặc Username
@@ -53,8 +43,6 @@ include __DIR__ . '/../layouts/header.php';
                                        value="<?= htmlspecialchars($_POST['identifier'] ?? '') ?>"
                                        required>
                             </div>
-                            
-                            <!-- Password -->
                             <div class="mb-3">
                                 <label for="password" class="form-label">
                                     <i class="fas fa-lock"></i> Mật khẩu
@@ -72,21 +60,15 @@ include __DIR__ . '/../layouts/header.php';
                                 </div>
                                 <small class="text-muted">Mật khẩu có ít nhất 6 ký tự</small>
                             </div>
-                            
-                            <!-- Remember Me -->
                             <div class="mb-3 form-check">
                                 <input type="checkbox" class="form-check-input" id="remember" name="remember">
                                 <label class="form-check-label" for="remember">Ghi nhớ đăng nhập</label>
                             </div>
-                            
-                            <!-- Submit Button -->
                             <div class="d-grid mb-3">
                                 <button type="submit" class="btn btn-primary btn-lg">
                                     <i class="fas fa-sign-in-alt"></i> Đăng nhập
                                 </button>
                             </div>
-                            
-                            <!-- Links -->
                             <div class="text-center">
                                 <p class="mb-2">
                                     <a href="#" class="text-decoration-none">
@@ -107,8 +89,6 @@ include __DIR__ . '/../layouts/header.php';
         </div>
     </div>
 </div>
-
-<!-- JS để toggle password visibility -->
 <script>
 document.getElementById('togglePassword').addEventListener('click', function() {
     const passwordInput = document.getElementById('password');
@@ -127,10 +107,7 @@ document.getElementById('togglePassword').addEventListener('click', function() {
 </script>
 
 <?php
-// Include footer
 include __DIR__ . '/../layouts/footer.php';
-
-// Clear messages after showing
 unset($_SESSION['error']);
 unset($_SESSION['success']);
 ?>

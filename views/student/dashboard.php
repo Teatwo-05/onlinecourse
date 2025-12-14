@@ -5,16 +5,12 @@ include __DIR__ . '/../layouts/header.php';
 <div id="student-dashboard" class="container">
 
     <h1>🎓 Bảng điều khiển học viên</h1>
-
-    <!-- Hộp chào học viên -->
     <div class="welcome-box">
         <h2>Xin chào, <?= htmlspecialchars($_SESSION['user']['fullname'] ?? 'Học viên') ?> 👋</h2>
         <p>Chúc bạn một ngày học tập hiệu quả!</p>
     </div>
 
     <hr>
-
-    <!-- Thống kê nhanh -->
     <div class="dashboard-cards">
 
         <div class="card">
@@ -38,8 +34,6 @@ include __DIR__ . '/../layouts/header.php';
     </div>
 
     <hr>
-
-    <!-- Tiến độ gần đây -->
     <h2>🕓 Tiến độ học tập gần đây</h2>
 
     <div class="progress-list">

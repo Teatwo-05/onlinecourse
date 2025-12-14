@@ -12,7 +12,6 @@ class Material {
 $this->conn = $db->getConnection();
     }
 
-    // Lấy danh sách tài liệu theo lesson_id
     public function getByLesson($lesson_id) {
         $sql = "SELECT * FROM {$this->table} WHERE lesson_id = :lesson_id ORDER BY uploaded_at DESC";
         $stmt = $this->conn->prepare($sql);
@@ -21,7 +20,6 @@ $this->conn = $db->getConnection();
         return $stmt->fetchAll();
     }
 
-    // Thêm tài liệu mới
     public function create($lesson_id, $filename, $file_path, $file_type) {
         $sql = "INSERT INTO {$this->table} (lesson_id, filename, file_path, file_type) 
                 VALUES (:lesson_id, :filename, :file_path, :file_type)";
@@ -33,7 +31,7 @@ $this->conn = $db->getConnection();
         return $stmt->execute();
     }
 
-    // Lấy một tài liệu theo ID
+
     public function find($id) {
         $sql = "SELECT * FROM {$this->table} WHERE id = :id LIMIT 1";
         $stmt = $this->conn->prepare($sql);
@@ -42,7 +40,6 @@ $this->conn = $db->getConnection();
         return $stmt->fetch();
     }
 
-    // Xóa tài liệu
     public function delete($id) {
         $sql = "DELETE FROM {$this->table} WHERE id = :id";
         $stmt = $this->conn->prepare($sql);
@@ -51,12 +48,12 @@ $this->conn = $db->getConnection();
     }
     public function getMaterialsByCourse($courseId) {
     try {
-        // Lấy tất cả tài liệu (m.*) và tên bài học (l.title)
+        
         $sql = "SELECT m.*, l.title as lesson_title 
                 FROM {$this->table} m  
                 JOIN lessons l ON m.lesson_id = l.id
                 WHERE l.course_id = :courseId 
-                ORDER BY l.lesson_order, m.id"; // Sắp xếp theo thứ tự bài học
+                ORDER BY l.lesson_order, m.id"; 
 
         $stmt = $this->conn->prepare($sql);
         $stmt->bindValue(':courseId', $courseId, PDO::PARAM_INT);
@@ -65,7 +62,7 @@ $this->conn = $db->getConnection();
         return $stmt->fetchAll();
 
     } catch (PDOException $e) {
-        // Ghi log lỗi và trả về mảng rỗng
+  
         error_log("Error in getMaterialsByCourse: " . $e->getMessage());
         return [];
     }

@@ -1,8 +1,6 @@
 <?php
 session_start();
 require_once 'config/constants.php';
-
-// Autoload models & controllers
 spl_autoload_register(function ($class) {
     $paths = [
         "controllers/$class.php",
@@ -17,7 +15,7 @@ spl_autoload_register(function ($class) {
         }
     }
     
-    // Nếu không tìm thấy, ghi log
+    
     if (DEBUG) {
         error_log("Class $class not found in autoload paths");
     }
@@ -27,17 +25,13 @@ spl_autoload_register(function ($class) {
 $controllerName = $_GET['c'] ?? $_GET['controller'] ?? 'home';
 $actionName = $_GET['a'] ?? $_GET['action'] ?? 'index';
 
-// Chuyển đổi tên controller về dạng chuẩn
-// Ví dụ: 'home' -> 'HomeController'
-$controllerName = strtolower($controllerName); // Chuyển về chữ thường
-$controllerClass = ucfirst($controllerName) . 'Controller'; // Viết hoa chữ cái đầu + thêm 'Controller'
+$controllerName = strtolower($controllerName); 
+$controllerClass = ucfirst($controllerName) . 'Controller'; 
 
-// Đường dẫn đến file controller
+
 $controllerFile = "controllers/$controllerClass.php";
 
 
-
-// Kiểm tra file controller tồn tại
 if (!file_exists($controllerFile)) {
     http_response_code(404);
     echo "<h2>404 - Controller không tồn tại</h2>";
@@ -55,10 +49,9 @@ if (!file_exists($controllerFile)) {
     exit;
 }
 
-// Include controller file
+
 require_once $controllerFile;
 
-// Kiểm tra class tồn tại
 if (!class_exists($controllerClass)) {
     http_response_code(500);
     echo "<h2>500 - Lỗi controller</h2>";
@@ -67,10 +60,10 @@ if (!class_exists($controllerClass)) {
 }
 
 try {
-    // Khởi tạo controller
+
     $controller = new $controllerClass();
     
-    // Kiểm tra action tồn tại
+
     if (!method_exists($controller, $actionName)) {
         http_response_code(404);
         echo "<h2>404 - Action không tồn tại</h2>";
@@ -80,7 +73,7 @@ try {
             $methods = get_class_methods($controller);
             echo "<ul>";
             foreach ($methods as $method) {
-                if ($method[0] !== '_') { // Không hiển thị private/protected methods
+                if ($method[0] !== '_') { 
                     echo "<li>$method</li>";
                 }
             }
@@ -89,7 +82,7 @@ try {
         exit;
     }
     
-    // Gọi action
+    
     $controller->$actionName();
     
 } catch (Exception $e) {

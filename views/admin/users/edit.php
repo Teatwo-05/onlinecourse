@@ -1,11 +1,5 @@
 <?php
-// File: /c:/xampp/htdocs/CSE485/onlinecourse/views/admin/users/edit.php
-//header
 require_once __DIR__ . '/../../layouts/header.php';
-// Expecting:
-// $user  - associative array with current user data (id, name, email, role_id, status)
-// $roles - array of role arrays (id, name)
-// $errors - associative array of validation errors
 
 $user = isset($user) ? $user : [];
 $roles = isset($roles) ? $roles : [];
@@ -19,7 +13,7 @@ $id = isset($user['id']) ? $user['id'] : '';
 $name = isset($user['name']) ? $user['name'] : '';
 $email = isset($user['email']) ? $user['email'] : '';
 $role_id = isset($user['role_id']) ? $user['role_id'] : '';
-$status = isset($user['status']) ? $user['status'] : '1'; // default active
+$status = isset($user['status']) ? $user['status'] : '1'; 
 ?>
 <!doctype html>
 <html lang="vi">
@@ -27,7 +21,6 @@ $status = isset($user['status']) ? $user['status'] : '1'; // default active
     <meta charset="utf-8">
     <title>Sửa người dùng</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <!-- Optional: include Bootstrap CSS if your layout doesn't already -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
@@ -105,6 +98,5 @@ $status = isset($user['status']) ? $user['status'] : '1'; // default active
 </body>
 </html>
 <?php
-//footer
 include __DIR__ . '/../../layouts/footer.php';
 ?>

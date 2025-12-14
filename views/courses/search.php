@@ -5,8 +5,6 @@ include __DIR__ . '/../layouts/header.php';
 <div class="container">
 
     <h1>Tìm kiếm khóa học</h1>
-
-    <!-- Form tìm kiếm + lọc danh mục -->
     <form action="/courses/search" method="get" class="search-form">
 
         <input type="text" 
@@ -32,8 +30,6 @@ include __DIR__ . '/../layouts/header.php';
     <hr>
 
     <h2>Kết quả tìm kiếm</h2>
-
-    <!-- Danh sách khóa học -->
     <div class="course-list">
 
         <?php if (!empty($courses)): ?>

@@ -1,12 +1,12 @@
 <?php
-// File: controllers/LessonController.php
+
 include_once __DIR__ . '/../models/Lesson.php';
 include_once __DIR__ . '/../models/Course.php';
 include_once __DIR__ . '/../models/Material.php';
 
 class LessonController
 {
-    // HỌC VIÊN XEM BÀI HỌC
+
     public function view()
     {
         $lessonId = $_GET['id'] ?? null;
@@ -28,7 +28,7 @@ class LessonController
         include 'views/student/lesson/view.php';
     }
 
-    // GIẢNG VIÊN: DANH SÁCH BÀI HỌC
+
     public function manage()
     {
         $courseId = $_GET['course_id'] ?? null;
@@ -37,9 +37,9 @@ class LessonController
             die('Thiếu course_id.');
         }
 
-        // SỬA: Dùng instance thay vì static
-        $courseModel = new Course(); // Tạo instance
-        $course = $courseModel->getById($courseId); // Gọi phương thức non-static
+
+        $courseModel = new Course(); 
+        $course = $courseModel->getById($courseId); 
         
         if (!$course) {
             die("Khóa học không tồn tại.");
@@ -51,7 +51,7 @@ class LessonController
         include 'views/instructor/lessons/manage.php';
     }
 
-    // GIẢNG VIÊN: LƯU BÀI HỌC
+
     public function store()
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -76,7 +76,7 @@ class LessonController
         exit;
     }
 
-    // GIẢNG VIÊN: FORM CHỈNH SỬA
+
     public function edit()
     {
         $lessonId = $_GET['id'] ?? null;
@@ -95,7 +95,7 @@ class LessonController
         include 'views/instructor/lessons/edit.php';
     }
 
-    // GIẢNG VIÊN: CẬP NHẬT
+
     public function update()
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -120,7 +120,7 @@ class LessonController
         exit;
     }
 
-    // GIẢNG VIÊN: XÓA
+
     public function delete()
     {
         $lessonId = $_GET['id'] ?? null;

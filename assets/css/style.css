@@ -1,4 +1,4 @@
-/* Thêm vào assets/css/style.css */
+
 .course-thumb {
     width: 100%;
     height: 200px;
@@ -228,10 +228,6 @@
   background-color: #28a745;
   color: white;
 }
-/* ===================================================
-   🎓 STUDENT DASHBOARD - CÁCH LY KHÔNG ẢNH HƯỞNG HỆ THỐNG
-   Áp dụng cho <div id="student-dashboard">
-   =================================================== */
 
 #student-dashboard {
     width: 90%;
@@ -320,7 +316,6 @@
     background: #1e40af;
 }
 
-/* Tiến độ */
 #student-dashboard h2 {
     color: #1e293b;
     margin-top: 25px;
@@ -379,7 +374,6 @@
     background-color: #1e40af;
 }
 
-/* Responsive */
 @media (max-width: 768px) {
     #student-dashboard .dashboard-cards {
         flex-direction: column;
@@ -394,9 +388,6 @@
         grid-template-columns: 1fr;
     }
 }
-/* ===============================
-   🎓 Trang: Học viên - Khóa học của tôi
-   =============================== */
 .student-my-courses {
   padding: 40px 0;
 }

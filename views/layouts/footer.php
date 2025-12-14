@@ -1,5 +1,4 @@
 <?php 
-// views/layouts/footer.php 
 ?>
 
         </div> <footer class="footer mt-auto py-4 bg-light border-top">

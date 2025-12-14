@@ -2,11 +2,11 @@
 include_once __DIR__ . '/../models/Category.php';
 class AdminController
 {
-    // Cần bổ sung các phương thức cơ bản
+    
     public function dashboard()
     {
        
-        // Có thể lấy thêm dữ liệu từ model nếu cần
+      
         require_once 'views/admin/dashboard.php';
     }
 
@@ -19,9 +19,9 @@ class AdminController
         exit;
     }
 
-    // Quản lý danh mục
+
     public function categories() {
-        // Đảm bảo session_start() đã được gọi ở file chính
+     
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
@@ -31,7 +31,7 @@ class AdminController
         $this->view("admin/categories/list", ["categories" => $categories]);
     }
 
-    // Form thêm danh mục mới
+  
     public function createCategory() {
         $this->view("admin/categories/create");
     }
@@ -118,7 +118,7 @@ class AdminController
         $_SESSION['success'] = "Xóa danh mục thành công!";
         $this->redirect("Admin", "categories");
     }
-    //admin lấy all users
+
      public function manageUsers()
     {
         if (empty($_SESSION['user']) || $_SESSION['user']['role'] !== 'admin') {
@@ -127,13 +127,13 @@ class AdminController
         }
 
         $userModel = new User();
-        $users = $userModel->getAllUsers(); // bạn cần có hàm này trong models/User.php
+        $users = $userModel->getAllUsers(); 
 
         require_once 'views/admin/users/manage.php';
     }
 
 
-    // Duyệt khóa học
+    
     public function approveCourse()
     {
         if (empty($_SESSION['user']) || $_SESSION['user']['role'] !== 'admin') {
@@ -154,7 +154,7 @@ class AdminController
         exit;
     }
 
-    // Từ chối khóa học
+  
     public function rejectCourse()
     {
         if (empty($_SESSION['user']) || $_SESSION['user']['role'] !== 'admin') {
@@ -182,11 +182,11 @@ class AdminController
         return;
     }
 
-    $userModel = new User(); // $this->conn là PDO
+    $userModel = new User(); 
     $error = '';
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        // Lấy dữ liệu từ form
+    
         $data = [
             'id' => $userId,
             'name' => $_POST['name'] ?? '',
@@ -204,14 +204,14 @@ class AdminController
         }
     }
 
-    // Lấy dữ liệu user hiện tại
+ 
     $user = $userModel->getById($userId);
 
     include __DIR__ . '/../views/admin/users/edit.php';
 }
-// AdminController.php
+
 public function deactivateUser($id = null) {
-    // Lấy id từ GET nếu chưa có
+
     if ($id === null) {
         $id = $_GET['id'] ?? null;
     }
@@ -224,7 +224,6 @@ public function deactivateUser($id = null) {
 
     $userModel = new User();
 
-    // Xóa hẳn user
     try {
         if ($userModel->deactivateUser($userId)) {
             header("Location: index.php?c=admin&a=manageUsers&msg=deleted");
@@ -233,12 +232,11 @@ public function deactivateUser($id = null) {
             echo "Không thể xóa user này.";
         }
     } catch (PDOException $e) {
-        // Nếu lỗi ràng buộc khóa ngoại
+       
         if ($e->getCode() == '23000') {
-            // SQLSTATE 23000 = violation foreign key
+           
             echo "Không thể xóa user này vì có dữ liệu liên quan (ví dụ: khóa học hoặc enrollment).";
         } else {
-            // Lỗi khác
             echo "Lỗi hệ thống: " . $e->getMessage();
         }
     }

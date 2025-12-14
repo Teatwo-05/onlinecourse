@@ -1,5 +1,4 @@
 <?php 
-// views/courses/index.php
 if (!defined('BASE_URL')) {
     require_once __DIR__ . '/../../config/constants.php';
 }
@@ -10,14 +9,12 @@ $selected_category = $selected_category ?? '';
 $courses = $courses ?? [];
 $categories = $categories ?? [];
 
-// Include header
 include __DIR__ . "/../layouts/header.php"; 
 ?>
 
 <div class="container mt-4">
     <h2 class="mb-4">Danh sách khóa học</h2>
 
-    <!-- FORM TÌM KIẾM + LỌC DANH MỤC -->
     <form method="GET" action="index.php" class="row g-3 mb-4">
         <input type="hidden" name="c" value="course">
         <input type="hidden" name="a" value="index">
@@ -52,17 +49,14 @@ include __DIR__ . "/../layouts/header.php";
             </button>
         </div>
     </form>
-
-    <!-- DANH SÁCH KHÓA HỌC -->
     <div class="row">
         <?php if (!empty($courses)): ?>
             <?php foreach ($courses as $course): ?>
                 <div class="col-md-4 mb-4">
                     <div class="card h-100">
                         <?php
-                        // Xử lý ảnh thumbnail an toàn
                         $thumbnail = $course['thumbnail'] ?? '';
-                        $imgSrc = BASE_URL . '/assets/img/default-course.jpg';
+                        $imgSrc = 'assets/img/'.$course['image'];
                         
                         ?>
                         
@@ -119,6 +113,5 @@ include __DIR__ . "/../layouts/header.php";
 </div>
 
 <?php 
-// Include footer
 include __DIR__ . "/../layouts/footer.php"; 
 ?>

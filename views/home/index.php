@@ -1,12 +1,10 @@
 <?php
-// views/home/index.php
 if (!defined('BASE_URL')) {
     require_once __DIR__ . '/../../config/constants.php';
 }
 ?>
 
 <div class="home-page">
-    <!-- Hero Section -->
     <section class="hero-section bg-light text-dark py-5 mb-5">
     <div class="container">
         <div class="row align-items-center">
@@ -21,11 +19,6 @@ if (!defined('BASE_URL')) {
         </div>
     </div>
 </section>
-
-    <!-- Search Section -->
-    
-
-    <!-- Featured Courses -->
     <section class="courses-section">
         <div class="container">
             <div class="d-flex justify-content-between align-items-center mb-4">
@@ -38,9 +31,8 @@ if (!defined('BASE_URL')) {
                     <?php foreach ($courses as $course): ?>
                         <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
                             <div class="card h-100 course-card shadow-sm">
-                                <!-- Course Image -->
                                 <div class="course-img-container">
-                                    <img src="<?= !empty($course['image']) ? BASE_URL . '/' . $course['image'] : BASE_URL . '/assets/img/default-courses.jpg' ?>" 
+                                    <img src="<?= !empty($course['image']) ? 'assets/img/' . $course['image'] : 'assets/img/default-courses.jpg' ?>" 
                                          class="card-img-top" 
                                          alt="<?= htmlspecialchars($course['title']) ?>">
                                     <?php if ($course['price'] == 0): ?>
@@ -49,35 +41,26 @@ if (!defined('BASE_URL')) {
                                 </div>
                                 
                                 <div class="card-body">
-                                    <!-- Category -->
                                     <small class="text-muted d-block mb-1">
                                         <i class="fas fa-tag"></i> 
                                         <?= htmlspecialchars($course['category_name'] ?? 'Không phân loại') ?>
                                     </small>
-                                    
-                                    <!-- Title -->
                                     <h5 class="card-title">
                                         <a href="index.php?c=course&a=detail&id=<?= $course['id'] ?>" class="text-decoration-none text-dark">
                                             <?= htmlspecialchars($course['title']) ?>
                                         </a>
                                     </h5>
-                                    
-                                    <!-- Description (short) -->
                                     <p class="card-text text-muted small">
                                         <?= strlen($course['description']) > 100 ? 
                                             substr(htmlspecialchars($course['description']), 0, 100) . '...' : 
                                             htmlspecialchars($course['description']) ?>
                                     </p>
-                                    
-                                    <!-- Instructor -->
                                     <p class="card-text">
                                         <small>
                                             <i class="fas fa-chalkboard-teacher"></i>
                                             <?= htmlspecialchars($course['instructor_name'] ?? 'Unknown') ?>
                                         </small>
                                     </p>
-                                    
-                                    <!-- Level and Duration -->
                                     <div class="d-flex justify-content-between">
                                         <span class="badge bg-info">
                                             <i class="fas fa-signal"></i> 

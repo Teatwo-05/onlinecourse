@@ -1,11 +1,11 @@
 <?php
-// controllers/BaseController.php
+
 class BaseController
 {
     public function __construct()
     {
-       // Khởi tạo Models
-        require_once 'models/User.php'; // Cần User Model để kiểm tra role
+
+        require_once 'models/User.php'; 
         require_once 'models/Course.php';
         require_once 'models/Lesson.php';
         require_once 'models/Material.php';
@@ -17,8 +17,8 @@ class BaseController
         $this->materialModel = new Material();
         $this->enrollmentModel = new Enrollment();
 
-        // Kiểm tra quyền truy cập
-        $this->checkAuth(); // Có thể thêm code khởi tạo chung ở đây nếu cần
+
+        $this->checkAuth();
     }
     protected function view($viewPath, $data = [])
     {
@@ -64,17 +64,17 @@ class BaseController
             return null;
         }
 
-        // Tạo thư mục nếu chưa tồn tại
+
         if (!is_dir($upload_dir)) {
             mkdir($upload_dir, 0777, true);
         }
 
-        // Tạo tên file an toàn
+
         $file_ext = pathinfo($file['name'], PATHINFO_EXTENSION);
         $file_name = uniqid() . '_' . time() . '.' . $file_ext;
         $file_path = $upload_dir . $file_name;
 
-        // Di chuyển file
+
         if (move_uploaded_file($file['tmp_name'], $file_path)) {
             return $file_path;
         }

@@ -1,22 +1,19 @@
 <?php
-// File: controllers/EnrollmentController.php
-
-// SỬA: Dùng include_once thay vì require_once
 include_once __DIR__ . '/../models/Enrollment.php';
 include_once __DIR__ . '/../models/Course.php';
 include_once __DIR__ . '/../models/Lesson.php';
 
 class EnrollmentController
 {
-    // Đăng ký khóa học
+
     public function enroll()
     {
-        // Kiểm tra session
+
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
         
-        // Kiểm tra đăng nhập
+
         if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'student') {
             $_SESSION['error'] = "Bạn cần đăng nhập với vai trò học viên";
             header("Location: index.php");
@@ -32,7 +29,7 @@ class EnrollmentController
             exit;
         }
 
-        // Kiểm tra khóa học tồn tại
+
         $courseModel = new Course();
         $course = $courseModel->getById($course_id);
         
@@ -42,7 +39,7 @@ class EnrollmentController
             exit;
         }
         
-        // Kiểm tra đã đăng ký chưa
+
         $enrollmentModel = new Enrollment();
         if ($enrollmentModel->checkEnrolled($user_id, $course_id)) {
             $_SESSION['error'] = "Bạn đã đăng ký khóa học này rồi";
@@ -50,7 +47,7 @@ class EnrollmentController
             exit;
         }
 
-        // Tạo đăng ký
+
         $enrollmentModel->create([
             'user_id' => $user_id,
             'course_id' => $course_id,
@@ -63,7 +60,7 @@ class EnrollmentController
         exit;
     }
 
-    // Danh sách khóa học đã đăng ký
+
     public function myCourses()
     {
         if (session_status() === PHP_SESSION_NONE) {
@@ -83,7 +80,7 @@ class EnrollmentController
         $this->view("student/courses/my_courses", ["courses" => $courses]);
     }
 
-    // Xem tiến độ khóa học
+
     public function progress()
     {
         if (session_status() === PHP_SESSION_NONE) {
@@ -105,7 +102,7 @@ class EnrollmentController
             exit;
         }
 
-        // Kiểm tra đã đăng ký chưa
+
         $enrollmentModel = new Enrollment();
         if (!$enrollmentModel->checkEnrolled($user_id, $course_id)) {
             $_SESSION['error'] = "Bạn chưa đăng ký khóa học này";
@@ -113,15 +110,15 @@ class EnrollmentController
             exit;
         }
 
-        // Lấy thông tin khóa học
+
         $courseModel = new Course();
         $course = $courseModel->getById($course_id);
         
-        // Lấy danh sách bài học
+
         $lessonModel = new Lesson();
         $lessons = $lessonModel->getLessonsByCourse($course_id);
         
-        // Lấy tiến độ
+
         $progress = $enrollmentModel->getProgress($user_id, $course_id);
         
         $this->view("student/courses/progress", [
@@ -131,7 +128,7 @@ class EnrollmentController
         ]);
     }
 
-    // Cập nhật tiến độ học tập
+
     public function updateProgress()
     {
         if (session_status() === PHP_SESSION_NONE) {
@@ -153,13 +150,13 @@ class EnrollmentController
 
         $enrollmentModel = new Enrollment();
         
-        // Kiểm tra đã đăng ký chưa
+
         if (!$enrollmentModel->checkEnrolled($user_id, $course_id)) {
             echo json_encode(['success' => false, 'message' => 'Bạn chưa đăng ký khóa học này']);
             exit;
         }
         
-        // Đánh dấu hoàn thành (tăng progress)
+
         $result = $enrollmentModel->markLessonCompleted($user_id, $course_id);
         
         if ($result) {
@@ -175,7 +172,7 @@ class EnrollmentController
         exit;
     }
 
-    // Giảng viên xem danh sách học viên
+
     public function students()
     {
         if (session_status() === PHP_SESSION_NONE) {
@@ -196,7 +193,7 @@ class EnrollmentController
             exit;
         }
 
-        // Kiểm tra giảng viên có dạy khóa học này không
+
         $courseModel = new Course();
         $course = $courseModel->getById($course_id);
         
@@ -215,7 +212,7 @@ class EnrollmentController
         ]);
     }
 
-    // Phương thức view helper
+
     private function view($view, $data = []) {
         extract($data);
         include "views/$view.php";

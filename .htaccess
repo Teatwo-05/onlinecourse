@@ -1,29 +1,17 @@
-# .htaccess
 RewriteEngine On
-
-# Chặn truy cập trực tiếp vào các thư mục nhạy cảm
 RewriteRule ^(controllers|models|config|views)/ - [F,L]
 
-# Cho phép truy cập các file thực (css, js, images)
 RewriteCond %{REQUEST_FILENAME} -f
 RewriteCond %{REQUEST_FILENAME} !\.(css|js|png|jpg|jpeg|gif|ico|pdf|mp4|mp3)$ [NC]
 RewriteRule ^ - [L]
 
-# URL Rewriting cho đẹp
-# Chuyển đổi: /home/index -> index.php?c=home&a=index
-# Chuyển đổi: /auth/login -> index.php?c=auth&a=login
-# Chuyển đổi: /course/detail/5 -> index.php?c=course&a=detail&id=5
-
-# Rule 1: /controller/action/param1/param2
 RewriteRule ^([a-z]+)/([a-z]+)/([0-9]+)/?$ index.php?c=$1&a=$2&id=$3 [L,QSA]
 
-# Rule 2: /controller/action
+
 RewriteRule ^([a-z]+)/([a-z]+)/?$ index.php?c=$1&a=$2 [L,QSA]
 
-# Rule 3: /controller (mặc định action=index)
 RewriteRule ^([a-z]+)/?$ index.php?c=$1&a=index [L,QSA]
 
-# Rule cuối: chuyển tất cả về index.php
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^ index.php [L,QSA]

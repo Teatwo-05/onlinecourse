@@ -1,5 +1,5 @@
 <?php
-// File: models/Enrollment.php - CẬP NHẬT VỚI CẤU TRÚC THỰC
+
 require_once __DIR__ . '/../config/Database.php';
 
 class Enrollment {
@@ -11,7 +11,6 @@ class Enrollment {
         $this->conn = $db->getConnection();
     }
 
-    // 1. Kiểm tra đã đăng ký khóa học chưa
     public function checkEnrolled($user_id, $course_id) {
         $sql = "SELECT id FROM {$this->table} 
                 WHERE student_id = :student_id AND course_id = :course_id AND status != 'cancelled'";
@@ -28,19 +27,19 @@ class Enrollment {
         $sql = "SELECT COUNT(*) FROM enrollments 
                 WHERE course_id = :courseId 
                 AND student_id = :studentId 
-                LIMIT 1"; // Chỉ cần kiểm tra sự tồn tại
+                LIMIT 1";
                 
         $stmt = $this->conn->prepare($sql);
         $stmt->bindValue(':courseId', $courseId, PDO::PARAM_INT);
         $stmt->bindValue(':studentId', $studentId, PDO::PARAM_INT);
         $stmt->execute();
         
-        // Trả về true nếu COUNT > 0
+      
         return $stmt->fetchColumn() > 0;
 
     } catch (PDOException $e) {
         error_log("Error checking enrollment: " . $e->getMessage());
-        return false; // Mặc định là chưa đăng ký nếu có lỗi DB
+        return false; 
     }
 }
 public function enroll($courseId, $studentId)
@@ -62,7 +61,7 @@ public function enroll($courseId, $studentId)
             return ['success' => false, 'message' => 'Lỗi khi thực hiện đăng ký'];
         }
     } catch (PDOException $e) {
-        // Xử lý lỗi trùng lặp (ví dụ: đã đăng ký rồi)
+       
         if (strpos($e->getMessage(), 'Integrity constraint violation: 1062 Duplicate entry') !== false) {
              return ['success' => false, 'message' => 'Bạn đã đăng ký khóa học này rồi.'];
         }
@@ -71,7 +70,7 @@ public function enroll($courseId, $studentId)
     }
 }
 
-    // 2. Tạo đăng ký mới
+
     public function create($data) {
         $sql = "INSERT INTO {$this->table} (student_id, course_id, progress, status, enrolled_date) 
                 VALUES (:student_id, :course_id, :progress, :status, NOW())";
@@ -85,7 +84,6 @@ public function enroll($courseId, $studentId)
         return $stmt->execute();
     }
 
-    // 3. Lấy danh sách khóa học đã đăng ký của user
     public function getEnrolledCourses($user_id) {
         $sql = "SELECT c.*, e.progress, e.status, e.enrolled_date 
                 FROM {$this->table} e 
@@ -99,7 +97,7 @@ public function enroll($courseId, $studentId)
         return $stmt->fetchAll();
     }
 
-    // 4. Lấy tiến độ học tập
+
     public function getProgress($user_id, $course_id) {
         $sql = "SELECT progress FROM {$this->table} 
                 WHERE student_id = :student_id AND course_id = :course_id";
@@ -112,15 +110,12 @@ public function enroll($courseId, $studentId)
         return $result ? $result['progress'] : 0;
     }
 
-    // 5. Đánh dấu bài học đã hoàn thành - PHIÊN BẢN KHÔNG DÙNG completed_lessons
     public function markLessonCompleted($user_id, $course_id) {
-        // Lấy progress hiện tại
+      
         $current_progress = $this->getProgress($user_id, $course_id);
         
-        // Tăng progress (ví dụ: mỗi bài học hoàn thành = +10%)
         $new_progress = min(100, $current_progress + 10);
-        
-        // Cập nhật progress
+    
         $sql = "UPDATE {$this->table} 
                 SET progress = :progress,
                     completed_at = IF(:progress = 100, NOW(), completed_at)
@@ -133,7 +128,7 @@ public function enroll($courseId, $studentId)
         return $stmt->execute();
     }
 
-    // 6. Lấy danh sách học viên trong khóa học
+
     public function getStudentsInCourse($course_id) {
         $sql = "SELECT u.id, u.username, u.email, u.fullname, u.role, 
                        e.progress, e.status, e.enrolled_date, e.completed_at
@@ -148,7 +143,7 @@ public function enroll($courseId, $studentId)
         return $stmt->fetchAll();
     }
 
-    // 7. Thống kê cho admin
+
     public static function countAll() {
         $db = Database::getInstance();
         $conn = $db->getConnection();
@@ -158,7 +153,7 @@ public function enroll($courseId, $studentId)
         return $stmt->fetch()['total'];
     }
 
-    // 8. Thống kê theo khóa học
+  
     public static function getStatsByCourse() {
         $db = Database::getInstance();
         $conn = $db->getConnection();
@@ -174,8 +169,7 @@ public function enroll($courseId, $studentId)
         $stmt = $conn->query($sql);
         return $stmt->fetchAll();
     }
-    
-    // 9. Cập nhật tiến độ (method mới để linh hoạt hơn)
+  
     public function updateProgress($user_id, $course_id, $progress) {
         $sql = "UPDATE {$this->table} 
                 SET progress = :progress,
@@ -190,7 +184,7 @@ public function enroll($courseId, $studentId)
         return $stmt->execute();
     }
     
-    // 10. Hủy đăng ký
+
     public function cancelEnrollment($user_id, $course_id) {
         $sql = "UPDATE {$this->table} 
                 SET status = 'cancelled',
@@ -202,11 +196,11 @@ public function enroll($courseId, $studentId)
         
         return $stmt->execute();
     }
-    // Thêm vào class Enrollment trong models/Enrollment.php
+
 
 public function countStudentsByInstructor($instructor_id) 
 {
-    // Đếm số lượng học viên ĐỘC LẬP (DISTINCT) đã đăng ký vào các khóa học của giảng viên này
+
     $sql = "
         SELECT COUNT(DISTINCT e.student_id) AS total_students
         FROM enrollments e
@@ -217,10 +211,10 @@ public function countStudentsByInstructor($instructor_id)
     $stmt = $this->conn->prepare($sql);
     $stmt->execute([':instructor_id' => $instructor_id]);
     
-    // Trả về số lượng
+
     return $stmt->fetch()['total_students'] ?? 0;
 }
-// models/Enrollment.php
+
 public function getEnrolledCoursesByStudent($student_id)
 {
     $sql = "SELECT c.*

@@ -7,14 +7,13 @@ class User {
     private $conn;
 
     public function __construct() {
-        $db = Database::getInstance();  // Sử dụng Singleton
+        $db = Database::getInstance();  
         $this->conn = $db->getConnection();
     }
 
-    // Đăng ký tài khoản
     public function register($username, $email, $password, $fullname, $role = 'student') {
         try {
-            // Validation
+          
             if (empty($username) || empty($email) || empty($password) || empty($fullname)) {
                 return ['success' => false, 'message' => 'Vui lòng điền đầy đủ thông tin'];
             }
@@ -27,7 +26,7 @@ class User {
                 return ['success' => false, 'message' => 'Mật khẩu phải có ít nhất 6 ký tự'];
             }
             
-            // Kiểm tra trùng
+        
             if ($this->emailExists($email)) {
                 return ['success' => false, 'message' => 'Email đã tồn tại'];
             }
@@ -35,7 +34,7 @@ class User {
                 return ['success' => false, 'message' => 'Username đã được sử dụng'];
             }
             
-            // Chỉ cho phép các role hợp lệ
+            
             $allowed_roles = ['student', 'instructor', 'admin'];
             if (!in_array($role, $allowed_roles)) {
                 $role = 'student';
@@ -69,17 +68,16 @@ class User {
         }
     }
 
-    // Đăng nhập
+ 
    public function login($identifier, $password) {
     try {
-        // Sửa lỗi HY093: Sử dụng hai placeholder khác nhau để liên kết hai lần
+        
         $sql = "SELECT * FROM users 
                 WHERE (username = :username OR email = :email) 
                 LIMIT 1";
                 
         $stmt = $this->conn->prepare($sql);
-        
-        // Truyền giá trị cho cả hai placeholder
+ 
         $stmt->execute([
             ':username' => trim($identifier),
             ':email' => trim($identifier)
@@ -88,14 +86,14 @@ class User {
         $user = $stmt->fetch();
 
         if ($user && password_verify($password, $user['password'])) {
-            // Kiểm tra xem tài khoản có bị deactivated không
+       
 
             
-            // Chuyển đổi role INT thành string
+       
             $roleInt = $user['role'] ?? 0;
             $roleString = $this->convertRoleToString($roleInt);
             
-            // Chuyển role thành string trong user data
+         
             $user['role'] = $roleString; 
             $user['role_int'] = $roleInt; 
             
@@ -105,13 +103,12 @@ class User {
         return ['success' => false, 'message' => 'Sai tên đăng nhập hoặc mật khẩu'];
         
     } catch (PDOException $e) {
-        // Khi DEBUG xong, bạn nên chuyển về thông báo lỗi chung
+       
         return ['success' => false, 'message' => 'Lỗi hệ thống'];
-        // Hoặc dùng die("Lỗi: " . $e->getMessage()); nếu muốn debug chi tiết
+        
     }
 }
 
-// **THÊM METHOD convertRoleToString() vào class User**
 private function convertRoleToString($roleInt)
 {
     $roleInt = (int)$roleInt;
@@ -123,7 +120,6 @@ private function convertRoleToString($roleInt)
     }
 }
 
-    // Kiểm tra email
     public function emailExists($email) {
         $sql = "SELECT id FROM users WHERE email = :email";
         $stmt = $this->conn->prepare($sql);
@@ -131,7 +127,6 @@ private function convertRoleToString($roleInt)
         return $stmt->fetch() ? true : false;
     }
 
-    // Kiểm tra username
     public function usernameExists($username) {
         $sql = "SELECT id FROM users WHERE username = :u";
         $stmt = $this->conn->prepare($sql);
@@ -139,7 +134,6 @@ private function convertRoleToString($roleInt)
         return $stmt->fetch() ? true : false;
     }
 
-    // Lấy user theo ID
     public function getById($id) {
         $sql = "SELECT id, username, email, fullname, role, created_at 
                 FROM users 
@@ -149,13 +143,11 @@ private function convertRoleToString($roleInt)
         return $stmt->fetch();
     }
 
-    // Lấy tất cả users (cho Admin) - KHÔNG hiển thị mật khẩu
    
 
-    // Cập nhật thông tin user
     public function updateProfile($id, $fullname, $email) {
         try {
-            // Kiểm tra email mới có trùng với người khác không
+
             $checkSql = "SELECT id FROM users WHERE email = :email AND id != :id";
             $checkStmt = $this->conn->prepare($checkSql);
             $checkStmt->execute([':email' => $email, ':id' => $id]);
@@ -182,7 +174,7 @@ private function convertRoleToString($roleInt)
         }
     }
 
-    // Cập nhật role (Admin function)
+
     public function updateRole($id, $role) {
         $allowed_roles = ['student', 'instructor', 'admin'];
         if (!in_array($role, $allowed_roles)) {
@@ -197,17 +189,13 @@ private function convertRoleToString($roleInt)
         ]);
     }
 
-    // Soft delete user (Admin function)
-    
-
-    // Đếm tổng số user (cho phân trang)
     public function countAll() {
         $sql = "SELECT COUNT(*) as total FROM users";
         $stmt = $this->conn->query($sql);
         return $stmt->fetch()['total'];
     }
     
-    // Lấy user theo email
+
     public function getByEmail($email) {
         $sql = "SELECT id, username, email, fullname, role, created_at 
                 FROM users 
@@ -217,8 +205,7 @@ private function convertRoleToString($roleInt)
         $stmt->execute([':email' => $email]);
         return $stmt->fetch();
     }
-    
-    // Cập nhật mật khẩu
+
     public function updatePassword($id, $newPassword) {
         if (strlen($newPassword) < 6) {
             return false;
@@ -231,7 +218,6 @@ private function convertRoleToString($roleInt)
             ':id' => $id
         ]);
     }
-    // Lấy tất cả users (cho Admin) - KHÔNG hiển thị mật khẩu
     public function getAllUsers($limit = 20, $offset = 0) {
         $sql = "SELECT id, username, email, fullname, role, created_at 
                 FROM users 
@@ -243,21 +229,21 @@ private function convertRoleToString($roleInt)
         $stmt->execute();
         return $stmt->fetchAll();
     }
-   // Lưu hoặc update user
+
    public function save($data) {
     if (!empty($data['id'])) {
-        // Update user
+    
         $sql = "UPDATE users SET fullname=:fullname, email=:email, role=:role WHERE id=:id";
         $stmt = $this->conn->prepare($sql);
         $stmt->execute([
-            ':fullname' => $data['name'],  // bạn vẫn có thể dùng key 'name' từ form
+            ':fullname' => $data['name'],  
             ':email' => $data['email'],
             ':role' => $data['role'],
             ':id' => $data['id']
         ]);
         return $data['id'];
     } else {
-        // Insert user mới
+  
         $sql = "INSERT INTO users (fullname,email,role) VALUES (:fullname,:email,:role)";
         $stmt = $this->conn->prepare($sql);
         $stmt->execute([

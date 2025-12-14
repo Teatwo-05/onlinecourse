@@ -5,8 +5,8 @@ class InstructorController
 {
     public function __construct()
     {
-        // Khởi tạo Models
-        require_once 'models/User.php'; // Cần User Model để kiểm tra role
+
+        require_once 'models/User.php';
         require_once 'models/Course.php';
         require_once 'models/Lesson.php';
         require_once 'models/Material.php';
@@ -18,15 +18,10 @@ class InstructorController
         $this->materialModel = new Material();
         $this->enrollmentModel = new Enrollment();
 
-        // Kiểm tra quyền truy cập
+
         $this->checkAuth();
     }
 
-    /**
-     * ======================================
-     * Helper: Kiểm tra quyền Giảng viên (instructor)
-     * ======================================
-     */
     private function checkAuth()
     {
         if (empty($_SESSION['user'])) {
@@ -37,7 +32,7 @@ class InstructorController
 
         $role = $_SESSION['user']['role'] ?? 0;
         
-        // Chuyển đổi role từ số sang string (như trong User.php của bạn)
+
         if (is_numeric($role)) {
             $role = $this->userModel->convertRoleToString($role);
         }
@@ -54,7 +49,7 @@ class InstructorController
     {
         $instructor_id = $_SESSION['user']['id'];
         
-        // Lấy dữ liệu tổng quan (Giả định các hàm Model tồn tại)
+
         $total_courses = $this->courseModel->countInstructorCourses($instructor_id);
         $total_students = $this->enrollmentModel->countStudentsByInstructor($instructor_id);
         
@@ -72,7 +67,7 @@ class InstructorController
     public function myCourses()
     {
         $instructor_id = $_SESSION['user']['id'];
-        // Lấy danh sách khóa học do giảng viên này tạo
+
         $courses = $this->courseModel->getCoursesByInstructor($instructor_id); 
         
         $data = [

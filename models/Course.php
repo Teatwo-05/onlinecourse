@@ -13,9 +13,6 @@ class Course
         $this->conn = $db->getConnection();
     }
 
-    /* ===============================
-        LẤY TẤT CẢ KHÓA HỌC + PHÂN TRANG
-    =================================*/
     public function getAllCourses($limit = 20, $offset = 0)
     {
         $sql = "SELECT c.*, u.fullname AS instructor_name, cat.name AS category_name
@@ -33,15 +30,13 @@ class Course
         return $stmt->fetchAll();
     }
 
-    /* ===============================
-        TÌM KIẾM KHÓA HỌC
-    =================================*/
+
     public function searchCourses($keyword)
 {
     try {
         $sql = "SELECT * FROM courses 
                 WHERE (title LIKE :kw1 OR description LIKE :kw2)
-                "; // nếu có cột này, thêm vào để tránh hiển thị đã xóa
+                "; 
 
         $stmt = $this->conn->prepare($sql);
         $stmt->execute([
@@ -49,19 +44,15 @@ class Course
             ':kw2' => "%$keyword%"
         ]);
 
-        // ✅ Lấy tất cả kết quả
         $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        return $results; // ⚠️ Quan trọng!
+        return $results; 
     } catch (PDOException $e) {
         die("Error in searchCourses(): " . $e->getMessage());
     }
 }
 
 
-    /* ===============================
-        LỌC KHÓA HỌC THEO DANH MỤC
-    =================================*/
     public function getCoursesByCategory($category_id)
     {
         $sql = "SELECT * FROM courses WHERE category_id = :category_id";
@@ -72,9 +63,7 @@ class Course
         return $stmt->fetchAll();
     }
 
-    /* ===============================
-        LẤY CHI TIẾT KHÓA HỌC
-    =================================*/
+
     public function getById($id) {
         $sql = "SELECT * FROM {$this->table} WHERE id = :id";
         $stmt = $this->conn->prepare($sql);
@@ -100,9 +89,7 @@ class Course
         return $stmt->fetch();
     }
 
-    /* ===============================
-        LẤY KHÓA HỌC THEO GIẢNG VIÊN
-    =================================*/
+    
     public function getCoursesByInstructor($instructor_id)
     {
         $sql = "SELECT * FROM courses WHERE instructor_id = :instructor_id";
@@ -113,9 +100,7 @@ class Course
         return $stmt->fetchAll();
     }
 
-    /* ===============================
-        TẠO KHÓA HỌC (GIẢNG VIÊN)
-    =================================*/
+    
     public function createCourse($data)
     {
         $sql = "INSERT INTO courses (title, description, instructor_id, category_id, price, duration_weeks, level, image)
@@ -135,9 +120,7 @@ class Course
         ]);
     }
 
-    /* ===============================
-        CẬP NHẬT KHÓA HỌC
-    =================================*/
+  
     public function updateCourse($id, $data)
     {
         $sql = "UPDATE courses 
@@ -166,9 +149,7 @@ class Course
         ]);
     }
 
-    /* ===============================
-        XÓA KHÓA HỌC
-    =================================*/
+
     public function deleteCourse($id, $instructor_id)
     {
         $sql = "DELETE FROM courses WHERE id = :id AND instructor_id = :instructor_id";
@@ -179,19 +160,18 @@ class Course
             ":instructor_id" => $instructor_id
         ]);
     }
-    // Thêm vào class Course trong models/Course.php
+
 
 public function countInstructorCourses($instructor_id) 
 {
-    // Giả định $this->conn đã được khởi tạo trong constructor của Course Model
+    
     $sql = "SELECT COUNT(*) as total 
             FROM courses 
             WHERE instructor_id = :id";
             
     $stmt = $this->conn->prepare($sql);
     $stmt->execute([':id' => $instructor_id]);
-    
-    // Trả về số lượng
+
     return $stmt->fetch()['total'] ?? 0;
 }
 }

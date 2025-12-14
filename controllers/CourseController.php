@@ -29,11 +29,6 @@ class CourseController extends BaseController
         $this->materialModel = new Material();
     }
 
-    /**
-     * ================================
-     *  STUDENT: LIST COURSES
-     * ================================
-     */
     public function index()
     {
         $keyword = $_GET['keyword'] ?? '';
@@ -41,7 +36,7 @@ class CourseController extends BaseController
 
         $categories = $this->categoryModel->getAll();
 
-        // Xử lý tìm kiếm/lọc
+
         $courses = [];
         if (!empty($keyword)) {
             $courses = $this->courseModel->searchCourses($keyword);
@@ -59,11 +54,6 @@ class CourseController extends BaseController
         ]);
     }
 
-    /**
-     * ================================
-     *  STUDENT: COURSE DETAIL
-     * ================================
-     */
     public function detail()
     {
         $id = $_GET['id'] ?? 0;
@@ -83,7 +73,7 @@ class CourseController extends BaseController
         $lessons = $this->lessonModel->getLessonsByCourse($id);
         $materials = $this->materialModel->getMaterialsByCourse($id);
         
-        // Kiểm tra xem user đã đăng ký chưa
+
         $is_enrolled = false;
         if (!empty($_SESSION['user'])) {
             $is_enrolled = $this->enrollmentModel->isEnrolled($id, $_SESSION['user']['id']);
@@ -97,12 +87,7 @@ class CourseController extends BaseController
         ]);
     }
 
-    /**
-     * ================================
-     *  STUDENT: ENROLL COURSE
-     * ================================
-     */
-   // Trong controllers/CourseController.php
+
 
 public function enroll()
 {
@@ -111,7 +96,7 @@ if (empty($_SESSION['user'])) {
         header("Location: index.php?c=auth&a=login");
         exit;
     }
-    // SỬA LỖI TẠI ĐÂY: Chỉ lấy course_id từ $_GET
+
     $course_id = intval($_GET['id'] ?? 0);
     $student_id = $_SESSION['user']['id'];
 
@@ -121,7 +106,7 @@ if (empty($_SESSION['user'])) {
         return;
     }
 
-    // Kiểm tra khóa học tồn tại
+
     $course = $this->courseModel->getCourseById($course_id);
     if (!$course) {
         $_SESSION['error'] = "Khóa học không tồn tại.";
@@ -129,14 +114,14 @@ if (empty($_SESSION['user'])) {
         return;
     }
 
-    // Kiểm tra đã đăng ký chưa
+
     if ($this->enrollmentModel->isEnrolled($course_id, $student_id)) {
         $_SESSION['error'] = "Bạn đã đăng ký khóa học này rồi";
         $this->redirect("index.php?c=course&a=detail&id=$course_id");
         return;
     }
 
-    // Đăng ký
+
     $result = $this->enrollmentModel->enroll($course_id, $student_id);
     
     if ($result['success']) {
@@ -148,11 +133,6 @@ if (empty($_SESSION['user'])) {
     $this->redirect("index.php?c=course&a=detail&id=$course_id");
 }
 
-    /**
-     * ================================
-     *  INSTRUCTOR: LIST MY COURSES
-     * ================================
-     */
     public function my_courses()
     {
         $this->require_role('instructor');
@@ -165,11 +145,7 @@ if (empty($_SESSION['user'])) {
         ]);
     }
 
-    /**
-     * ================================
-     *  INSTRUCTOR: CREATE COURSE (FORM)
-     * ================================
-     */
+
     public function create()
     {
         $this->require_role('instructor');
@@ -181,11 +157,7 @@ if (empty($_SESSION['user'])) {
         ]);
     }
 
-    /**
-     * ================================
-     *  INSTRUCTOR: STORE COURSE
-     * ================================
-     */
+
     public function store()
     {
         $this->require_role('instructor');
@@ -203,20 +175,20 @@ if (empty($_SESSION['user'])) {
         $level = trim($_POST['level'] ?? 'beginner');
         $instructor_id = $_SESSION['user']['id'];
 
-        // Validation
+
         if (empty($title) || empty($description) || $category_id <= 0) {
             $_SESSION['error'] = "Vui lòng điền đầy đủ thông tin bắt buộc";
             $this->redirect('index.php?c=course&a=create');
             return;
         }
 
-        // Upload ảnh
+
         $image = null;
         if (!empty($_FILES['image']['name'])) {
             $image = $this->uploadFile($_FILES['image'], "uploads/courses/");
         }
 
-        // Tạo khóa học
+
         $data = [
             'title' => $title,
             'description' => $description,
@@ -239,11 +211,6 @@ if (empty($_SESSION['user'])) {
         }
     }
 
-    /**
-     * ================================
-     *  INSTRUCTOR: EDIT COURSE
-     * ================================
-     */
     public function edit()
     {
         $this->require_role('instructor');
@@ -256,7 +223,7 @@ if (empty($_SESSION['user'])) {
             return;
         }
 
-        // Kiểm tra quyền sở hữu
+
         if ($course['instructor_id'] != $_SESSION['user']['id']) {
             $this->render404("Bạn không có quyền chỉnh sửa khóa học này");
             return;
@@ -270,11 +237,7 @@ if (empty($_SESSION['user'])) {
         ]);
     }
 
-    /**
-     * ================================
-     *  INSTRUCTOR: UPDATE COURSE
-     * ================================
-     */
+
     public function update()
     {
         $this->require_role('instructor');
@@ -299,19 +262,19 @@ if (empty($_SESSION['user'])) {
         $duration_weeks = intval($_POST['duration_weeks'] ?? 4);
         $level = trim($_POST['level'] ?? 'beginner');
 
-        // Validation
+
         if (empty($title) || empty($description) || $category_id <= 0) {
             $_SESSION['error'] = "Vui lòng điền đầy đủ thông tin bắt buộc";
             $this->redirect("index.php?c=course&a=edit&id=$id");
             return;
         }
 
-        // Xử lý ảnh
+
         $image = $course['image'];
         if (!empty($_FILES['image']['name'])) {
             $new_image = $this->uploadFile($_FILES['image'], "uploads/courses/");
             if ($new_image) {
-                // Xóa ảnh cũ nếu có
+
                 if ($image && file_exists($image)) {
                     unlink($image);
                 }
@@ -319,7 +282,7 @@ if (empty($_SESSION['user'])) {
             }
         }
 
-        // Cập nhật
+
         $data = [
             'title' => $title,
             'description' => $description,
@@ -342,11 +305,6 @@ if (empty($_SESSION['user'])) {
         $this->redirect('index.php?c=course&a=my_courses');
     }
 
-    /**
-     * ================================
-     *  INSTRUCTOR: DELETE COURSE
-     * ================================
-     */
     public function delete()
     {
         $this->require_role('instructor');
@@ -356,12 +314,12 @@ if (empty($_SESSION['user'])) {
         if ($id) {
             $course = $this->courseModel->getCourseById($id);
             
-            // Kiểm tra quyền sở hữu
+
             if ($course && $course['instructor_id'] == $_SESSION['user']['id']) {
                 $result = $this->courseModel->deleteCourse($id, $_SESSION['user']['id']);
                 
                 if ($result) {
-                    // Xóa ảnh nếu có
+
                     if ($course['image'] && file_exists($course['image'])) {
                         unlink($course['image']);
                     }

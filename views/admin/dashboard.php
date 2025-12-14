@@ -1,5 +1,4 @@
 <?php
-// views/admin/dashboard.php
 require_once __DIR__ . '/../layouts/header.php';
 ?>
 
@@ -7,7 +6,6 @@ require_once __DIR__ . '/../layouts/header.php';
     <h1 class="page-title">Bảng điều khiển quản trị</h1>
     <p class="subtitle">Xin chào, <?= htmlspecialchars($_SESSION['user']['fullname'] ?? 'Quản trị viên') ?>!</p>
 
-    <!-- Thống kê tổng quan -->
     <section class="stats-overview">
         <div class="stat-card">
             <h3>👥 Người dùng</h3>
@@ -25,7 +23,6 @@ require_once __DIR__ . '/../layouts/header.php';
         </div>
     </section>
 
-    <!-- Danh sách khóa học chờ duyệt -->
     <section class="pending-courses">
         <h2>📋 Khóa học chờ phê duyệt</h2>
 

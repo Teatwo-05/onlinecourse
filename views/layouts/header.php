@@ -36,8 +36,6 @@
                     </li>
                     <?php if (!empty($_SESSION['user'])): 
                         $role = $_SESSION['user']['role'] ?? '';
-                        // Nếu role là số (0, 1, 2) thì cần convert về string ('student', 'instructor', 'admin')
-                        // Giả định logic convert đã được xử lý trong Controller
                         ?>
                         <?php if ($role === 'instructor'): ?>
                             <li class="nav-item">

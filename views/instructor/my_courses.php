@@ -12,7 +12,6 @@ include __DIR__ . '/../layouts/header.php';
 
     <hr>
 
-    <!-- Danh sách khóa học -->
     <div class="course-list">
 
         <?php if (!empty($courses)): ?>
@@ -26,7 +25,6 @@ include __DIR__ . '/../layouts/header.php';
                         </a>
                     </h3>
 
-                    <!-- Mô tả ngắn -->
                     <p><?= htmlspecialchars($course['description']) ?></p>
 
                     <p><strong>Danh mục:</strong> 

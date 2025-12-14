@@ -4,8 +4,6 @@ include __DIR__ . '/../layouts/header.php';
 
 <div class="container">
     <h1>Tiến độ khóa học</h1>
-
-    <!-- Thông tin khóa học -->
     <div class="course-header">
         <h2><?= htmlspecialchars($course['title']) ?></h2>
         <p><?= htmlspecialchars($course['description']) ?></p>
@@ -26,13 +24,9 @@ include __DIR__ . '/../layouts/header.php';
 
             <?php foreach ($lessons as $lesson): ?>
                 <div class="lesson-item">
-
-                    <!-- Tiêu đề bài học -->
                     <h4>
                         <?= htmlspecialchars($lesson['title']) ?>
                     </h4>
-
-                    <!-- Trạng thái hoàn thành -->
                     <?php 
                         $is_completed = in_array($lesson['id'], $completed_lessons ?? []);
                     ?>
@@ -45,8 +39,6 @@ include __DIR__ . '/../layouts/header.php';
                             <span class="status pending">Chưa hoàn thành</span>
                         <?php endif; ?>
                     </p>
-
-                    <!-- Nút xem bài học -->
                     <a href="/lessons/view?id=<?= $lesson['id'] ?>" class="btn-view">
                         Xem bài học
                     </a>

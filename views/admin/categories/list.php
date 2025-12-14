@@ -1,5 +1,4 @@
 <?php
-// views/admin/categories/list.php
 ?>
 <!DOCTYPE html>
 <html lang="vi">
